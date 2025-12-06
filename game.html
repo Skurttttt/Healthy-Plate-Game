@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game - Healthy Food Pyramid</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Healthy Food Pyramid Game</h1>
+        <button id="home-btn">🏠 Back to Home</button>
+        <div id="score">Score: 0</div>
+        <div id="feedback"></div>
+        <div class="food-panel"></div>
+        <div class="pyramid">
+            <div class="pyramid-level" data-level="GO">GO</div>
+            <div class="pyramid-level" data-level="GROW">GROW</div>
+            <div class="pyramid-level" data-level="GLOW">GLOW</div>
+        </div>
+        <button id="play-again">Play Again</button>
+    </div>
+
+    <div id="level-modal">
+        <div id="modal-content">
+            <p id="modal-message"></p>
+            <button id="modal-btn">OK</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
