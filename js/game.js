@@ -2,42 +2,43 @@
 // Healthy Food Pyramid Game
 // ======================
 
+// UPDATED: Foods array with emojis instead of images
 const foods = [
-    // GO Foods
-    { name: "Apple", level: "GO", img: "assets/images/apple.png" },
-    { name: "Rice", level: "GO", img: "assets/images/rice.png" },
-    { name: "Banana", level: "GO", img: "assets/images/banana.png" },
-    { name: "Bread", level: "GO", img: "assets/images/bread.png" },
-    { name: "Oats", level: "GO", img: "assets/images/oats.png" },
-    { name: "Orange", level: "GO", img: "assets/images/orange.png" },
-    { name: "Corn", level: "GO", img: "assets/images/corn.png" },
-    { name: "Potato", level: "GO", img: "assets/images/potato.png" },
-    { name: "Mango", level: "GO", img: "assets/images/mango.png" },
-    { name: "Pasta", level: "GO", img: "assets/images/pasta.png" },
+    // GO Foods with emojis
+    { name: "Apple", level: "GO", emoji: "🍎" },
+    { name: "Rice", level: "GO", emoji: "🍚" },
+    { name: "Banana", level: "GO", emoji: "🍌" },
+    { name: "Bread", level: "GO", emoji: "🍞" },
+    { name: "Oats", level: "GO", emoji: "🌾" },
+    { name: "Orange", level: "GO", emoji: "🍊" },
+    { name: "Corn", level: "GO", emoji: "🌽" },
+    { name: "Potato", level: "GO", emoji: "🥔" },
+    { name: "Mango", level: "GO", emoji: "🥭" },
+    { name: "Pasta", level: "GO", emoji: "🍝" },
 
-    // GROW Foods
-    { name: "Chicken", level: "GROW", img: "assets/images/chicken.png" },
-    { name: "Egg", level: "GROW", img: "assets/images/egg.png" },
-    { name: "Fish", level: "GROW", img: "assets/images/fish.png" },
-    { name: "Beef", level: "GROW", img: "assets/images/beef.png" },
-    { name: "Tofu", level: "GROW", img: "assets/images/tofu.png" },
-    { name: "Milk", level: "GROW", img: "assets/images/milk.png" },
-    { name: "Cheese", level: "GROW", img: "assets/images/cheese.png" },
-    { name: "Yogurt", level: "GROW", img: "assets/images/yogurt.png" },
-    { name: "Pork", level: "GROW", img: "assets/images/pork.png" },
-    { name: "Shrimp", level: "GROW", img: "assets/images/shrimp.png" },
+    // GROW Foods with emojis
+    { name: "Chicken", level: "GROW", emoji: "🍗" },
+    { name: "Egg", level: "GROW", emoji: "🥚" },
+    { name: "Fish", level: "GROW", emoji: "🐟" },
+    { name: "Beef", level: "GROW", emoji: "🥩" },
+    { name: "Tofu", level: "GROW", emoji: "🧈" },
+    { name: "Milk", level: "GROW", emoji: "🥛" },
+    { name: "Cheese", level: "GROW", emoji: "🧀" },
+    { name: "Yogurt", level: "GROW", emoji: "🍶" },
+    { name: "Pork", level: "GROW", emoji: "🐖" },
+    { name: "Shrimp", level: "GROW", emoji: "🦐" },
 
-    // GLOW Foods
-    { name: "Carrot", level: "GLOW", img: "assets/images/carrot.png" },
-    { name: "Spinach", level: "GLOW", img: "assets/images/spinach.png" },
-    { name: "Tomato", level: "GLOW", img: "assets/images/tomato.png" },
-    { name: "Broccoli", level: "GLOW", img: "assets/images/broccoli.png" },
-    { name: "Cucumber", level: "GLOW", img: "assets/images/cucumber.png" },
-    { name: "BellPepper", level: "GLOW", img: "assets/images/bellpepper.png" },
-    { name: "Lettuce", level: "GLOW", img: "assets/images/lettuce.png" },
-    { name: "Kale", level: "GLOW", img: "assets/images/kale.png" },
-    { name: "Mushroom", level: "GLOW", img: "assets/images/mushroom.png" },
-    { name: "Peas", level: "GLOW", img: "assets/images/peas.png" },
+    // GLOW Foods with emojis
+    { name: "Carrot", level: "GLOW", emoji: "🥕" },
+    { name: "Spinach", level: "GLOW", emoji: "🥬" },
+    { name: "Tomato", level: "GLOW", emoji: "🍅" },
+    { name: "Broccoli", level: "GLOW", emoji: "🥦" },
+    { name: "Cucumber", level: "GLOW", emoji: "🥒" },
+    { name: "BellPepper", level: "GLOW", emoji: "🫑" },
+    { name: "Lettuce", level: "GLOW", emoji: "🥬" },
+    { name: "Kale", level: "GLOW", emoji: "🥬" },
+    { name: "Mushroom", level: "GLOW", emoji: "🍄" },
+    { name: "Peas", level: "GLOW", emoji: "🫛" },
 ];
 
 const categories = ["GO","GROW","GLOW"];
@@ -46,7 +47,8 @@ let currentLevel = parseInt(localStorage.getItem("selectedLevel")) || 1;
 let score = 0;
 let draggingFood = null;
 
-const foodPanel = document.querySelector(".food-panel");
+// UPDATED: Get elements from new HTML structure
+const foodPanel = document.getElementById("food-panel");
 const scoreDisplay = document.getElementById("score");
 const feedback = document.getElementById("feedback");
 const playAgainBtn = document.getElementById("play-again");
@@ -55,6 +57,7 @@ const modal = document.getElementById("level-modal");
 const modalMessage = document.getElementById("modal-message");
 const modalBtn = document.getElementById("modal-btn");
 const homeBtn = document.getElementById("home-btn");
+const currentLevelDisplay = document.getElementById("current-level");
 
 // ======================
 // Helper Functions
@@ -79,6 +82,11 @@ function generateFoods(level) {
 let levelFoods = [];
 
 function initLevel(level) {
+    // Update level display
+    if (currentLevelDisplay) {
+        currentLevelDisplay.textContent = level;
+    }
+    
     levelFoods = generateFoods(level);
     renderFoods();
     clearPyramid();
@@ -88,9 +96,14 @@ function initLevel(level) {
 }
 
 // ======================
-// Render Foods
+// Render Foods - UPDATED for emojis and new HTML structure
 // ======================
 function renderFoods() {
+    if (!foodPanel) {
+        console.error("Food panel not found!");
+        return;
+    }
+    
     foodPanel.innerHTML = "";
     levelFoods.forEach(food => {
         const foodEl = document.createElement("div");
@@ -99,10 +112,17 @@ function renderFoods() {
         foodEl.setAttribute("data-level", food.level);
         foodEl.setAttribute("data-name", food.name);
 
-        const img = document.createElement("img");
-        img.src = food.img;
-        img.alt = food.name;
-        foodEl.appendChild(img);
+        // UPDATED: Use emoji instead of image
+        const emoji = document.createElement("div");
+        emoji.className = "food-emoji";
+        emoji.textContent = food.emoji;
+        foodEl.appendChild(emoji);
+        
+        // Add food name
+        const name = document.createElement("div");
+        name.className = "food-name";
+        name.textContent = food.name;
+        foodEl.appendChild(name);
 
         foodPanel.appendChild(foodEl);
 
@@ -115,41 +135,78 @@ function renderFoods() {
 // Pyramid & Drag-Drop
 // ======================
 function clearPyramid() {
-    pyramidLevels.forEach(lvl => lvl.innerHTML = lvl.dataset.level);
+    if (!pyramidLevels) return;
+    
+    pyramidLevels.forEach(lvl => {
+        // Keep only the header and description, remove placed food emojis
+        const header = lvl.querySelector('.pyramid-level-header');
+        const description = lvl.querySelector('.category-description');
+        lvl.innerHTML = '';
+        if (header) lvl.appendChild(header);
+        if (description) lvl.appendChild(description);
+        
+        // Reset styles
+        lvl.style.fontSize = "";
+        lvl.style.fontWeight = "";
+        lvl.style.display = "";
+        lvl.style.alignItems = "";
+        lvl.style.justifyContent = "";
+    });
 }
 
 function dragStart(e) {
     const foodDiv = e.currentTarget;
     e.dataTransfer.setData("foodName", foodDiv.dataset.name);
     e.dataTransfer.setData("foodLevel", foodDiv.dataset.level);
-    const img = foodDiv.querySelector("img");
-    if(img) e.dataTransfer.setDragImage(img, img.width/2, img.height/2);
+    
+    // UPDATED: Create a temporary element for drag image
+    const emoji = foodDiv.querySelector(".food-emoji");
+    if (emoji) {
+        const dragImage = document.createElement("div");
+        dragImage.textContent = emoji.textContent;
+        dragImage.style.fontSize = "2rem";
+        dragImage.style.position = "absolute";
+        dragImage.style.left = "-1000px";
+        document.body.appendChild(dragImage);
+        e.dataTransfer.setDragImage(dragImage, 20, 20);
+        setTimeout(() => document.body.removeChild(dragImage), 0);
+    }
 }
 
-function touchStart(e) { draggingFood = e.currentTarget; }
+function touchStart(e) { 
+    draggingFood = e.currentTarget; 
+}
 
-pyramidLevels.forEach(level => {
-    level.addEventListener("dragover", e => { e.preventDefault(); level.classList.add("highlight"); });
-    level.addEventListener("dragleave", e => { level.classList.remove("highlight"); });
-    level.addEventListener("drop", e => {
-        e.preventDefault();
-        level.classList.remove("highlight");
-        const foodName = e.dataTransfer.getData("foodName");
-        const foodLevel = e.dataTransfer.getData("foodLevel");
-        handlePlacement(foodName, foodLevel, level);
-    });
+// UPDATED: Add event listeners to pyramid levels
+if (pyramidLevels) {
+    pyramidLevels.forEach(level => {
+        level.addEventListener("dragover", e => { 
+            e.preventDefault(); 
+            level.classList.add("highlight"); 
+        });
+        level.addEventListener("dragleave", e => { 
+            level.classList.remove("highlight"); 
+        });
+        level.addEventListener("drop", e => {
+            e.preventDefault();
+            level.classList.remove("highlight");
+            const foodName = e.dataTransfer.getData("foodName");
+            const foodLevel = e.dataTransfer.getData("foodLevel");
+            handlePlacement(foodName, foodLevel, level);
+        });
 
-    level.addEventListener("touchend", e => {
-        if (!draggingFood) return;
-        const foodName = draggingFood.dataset.name;
-        const foodLevel = draggingFood.dataset.level;
-        handlePlacement(foodName, foodLevel, level);
-        draggingFood = null;
+        level.addEventListener("touchend", e => {
+            if (!draggingFood) return;
+            const foodName = draggingFood.dataset.name;
+            const foodLevel = draggingFood.dataset.level;
+            handlePlacement(foodName, foodLevel, level);
+            draggingFood = null;
+        });
     });
-});
+}
 
 // ======================
-// Handle Placement
+// Handle Placement - UPDATED for emojis
 // ======================
 function handlePlacement(foodName, foodLevel, targetLevel) {
     const target = targetLevel.dataset.level;
@@ -161,26 +218,27 @@ function handlePlacement(foodName, foodLevel, targetLevel) {
         scoreDisplay.textContent = score;
 
         const foodEl = Array.from(foodPanel.children).find(f => f.dataset.name === foodName);
-        const img = foodEl.querySelector("img");
+        const emoji = foodEl.querySelector(".food-emoji");
         const targetRect = targetLevel.getBoundingClientRect();
         const foodRect = foodEl.getBoundingClientRect();
         const dx = targetRect.left + targetRect.width/2 - (foodRect.left + foodRect.width/2);
         const dy = targetRect.top + targetRect.height/2 - (foodRect.top + foodRect.height/2);
 
-        img.style.position = "absolute";
-        img.style.zIndex = "1000";
-        img.style.transform = `translate(${dx}px, ${dy}px) scale(0.5)`;
-        img.style.transition = "transform 0.5s ease";
+        emoji.style.position = "absolute";
+        emoji.style.zIndex = "1000";
+        emoji.style.transform = `translate(${dx}px, ${dy}px) scale(0.5)`;
+        emoji.style.transition = "transform 0.5s ease";
 
         setTimeout(() => {
-            img.remove();
-            const newImg = document.createElement("img");
-            newImg.src = levelFoods[foodIndex].img;
-            newImg.alt = levelFoods[foodIndex].name;
-            newImg.style.width = "50px";
-            newImg.style.height = "50px";
-            newImg.style.margin = "2px";
-            targetLevel.appendChild(newImg);
+            emoji.remove();
+            // UPDATED: Create emoji instead of image
+            const newEmoji = document.createElement("div");
+            newEmoji.className = "food-emoji";
+            newEmoji.textContent = levelFoods[foodIndex].emoji;
+            newEmoji.style.fontSize = "2rem";
+            newEmoji.style.margin = "5px";
+            newEmoji.style.textAlign = "center";
+            targetLevel.appendChild(newEmoji);
 
             foodEl.remove();
             levelFoods.splice(foodIndex, 1);
@@ -196,10 +254,13 @@ function handlePlacement(foodName, foodLevel, targetLevel) {
 }
 
 // ======================
-// Check Level Completion
+// Check Level Completion - UPDATED to save progress
 // ======================
 function checkLevelComplete() {
     if(levelFoods.length === 0) {
+        // Save that this level is completed
+        localStorage.setItem(`level${currentLevel}Completed`, "true");
+        
         let storedUnlocked = parseInt(localStorage.getItem("highestUnlocked")) || 1;
         if(currentLevel >= storedUnlocked && currentLevel < maxLevel) {
             localStorage.setItem("highestUnlocked", currentLevel + 1);
@@ -208,11 +269,13 @@ function checkLevelComplete() {
         if(currentLevel < maxLevel) {
             showModal(`🎉 Passed Level ${currentLevel}! Now Level ${currentLevel + 1}`, () => {
                 currentLevel++;
+                localStorage.setItem("selectedLevel", currentLevel.toString());
                 initLevel(currentLevel);
             });
         } else {
             showModal("🏆 Congratulations! You completed all levels!", () => {
                 currentLevel = 1;
+                localStorage.setItem("selectedLevel", "1");
                 score = 0;
                 initLevel(currentLevel);
             });
@@ -224,6 +287,8 @@ function checkLevelComplete() {
 // Modal
 // ======================
 function showModal(message, callback) {
+    if (!modal || !modalMessage || !modalBtn) return;
+    
     modalMessage.textContent = message;
     modal.style.display = "flex";
     modalBtn.onclick = () => {
@@ -235,17 +300,30 @@ function showModal(message, callback) {
 // ======================
 // Buttons
 // ======================
-playAgainBtn.addEventListener("click", () => {
-    score = 0;
-    currentLevel = 1;
-    initLevel(currentLevel);
-});
+if (playAgainBtn) {
+    playAgainBtn.addEventListener("click", () => {
+        score = 0;
+        currentLevel = 1;
+        localStorage.setItem("selectedLevel", "1");
+        initLevel(currentLevel);
+    });
+}
 
-homeBtn.addEventListener("click", () => {
-    window.location.href = "index.html";
-});
+if (homeBtn) {
+    homeBtn.addEventListener("click", () => {
+        window.location.href = "index.html";
+    });
+}
 
 // ======================
 // Start Game
 // ======================
-initLevel(currentLevel);
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Update level display on page load
+    if (currentLevelDisplay) {
+        currentLevelDisplay.textContent = currentLevel;
+    }
+    
+    initLevel(currentLevel);
+});
