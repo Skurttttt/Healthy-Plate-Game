@@ -2,8 +2,8 @@
 // Healthy Food Pyramid Game
 // ======================
 
-// Original foods array (keep as before)
 const foods = [
+    // GO Foods
     { name: "Apple", level: "GO", img: "assets/images/apple.png" },
     { name: "Rice", level: "GO", img: "assets/images/rice.png" },
     { name: "Banana", level: "GO", img: "assets/images/banana.png" },
@@ -15,6 +15,7 @@ const foods = [
     { name: "Mango", level: "GO", img: "assets/images/mango.png" },
     { name: "Pasta", level: "GO", img: "assets/images/pasta.png" },
 
+    // GROW Foods
     { name: "Chicken", level: "GROW", img: "assets/images/chicken.png" },
     { name: "Egg", level: "GROW", img: "assets/images/egg.png" },
     { name: "Fish", level: "GROW", img: "assets/images/fish.png" },
@@ -26,6 +27,7 @@ const foods = [
     { name: "Pork", level: "GROW", img: "assets/images/pork.png" },
     { name: "Shrimp", level: "GROW", img: "assets/images/shrimp.png" },
 
+    // GLOW Foods
     { name: "Carrot", level: "GLOW", img: "assets/images/carrot.png" },
     { name: "Spinach", level: "GLOW", img: "assets/images/spinach.png" },
     { name: "Tomato", level: "GLOW", img: "assets/images/tomato.png" },
@@ -55,19 +57,19 @@ const modalBtn = document.getElementById("modal-btn");
 const homeBtn = document.getElementById("home-btn");
 
 // ======================
-// Helper
+// Helper Functions
 // ======================
-function shuffleArray(arr){
-    return arr.sort(()=> Math.random() - 0.5);
+function shuffleArray(arr) {
+    return arr.sort(() => Math.random() - 0.5);
 }
 
-function generateFoods(level){
+function generateFoods(level) {
     const levelFoods = [];
-    categories.forEach(cat=>{
+    categories.forEach(cat => {
         const categoryFoods = foods.filter(f => f.level === cat);
         const shuffled = shuffleArray(categoryFoods.slice());
         const pickCount = Math.min(level, shuffled.length);
-        for(let i=0;i<pickCount;i++){
+        for (let i = 0; i < pickCount; i++) {
             levelFoods.push(shuffled[i]);
         }
     });
@@ -76,16 +78,21 @@ function generateFoods(level){
 
 let levelFoods = [];
 
-function initLevel(level){
+function initLevel(level) {
     levelFoods = generateFoods(level);
     renderFoods();
     clearPyramid();
     feedback.textContent = "";
+    score = 0;
+    scoreDisplay.textContent = score;
 }
 
-function renderFoods(){
+// ======================
+// Render Foods
+// ======================
+function renderFoods() {
     foodPanel.innerHTML = "";
-    levelFoods.forEach(food=>{
+    levelFoods.forEach(food => {
         const foodEl = document.createElement("div");
         foodEl.classList.add("food-item");
         foodEl.setAttribute("draggable", true);
@@ -104,11 +111,14 @@ function renderFoods(){
     });
 }
 
-function clearPyramid(){
-    pyramidLevels.forEach(lvl=> lvl.innerHTML = lvl.dataset.level);
+// ======================
+// Pyramid & Drag-Drop
+// ======================
+function clearPyramid() {
+    pyramidLevels.forEach(lvl => lvl.innerHTML = lvl.dataset.level);
 }
 
-function dragStart(e){
+function dragStart(e) {
     const foodDiv = e.currentTarget;
     e.dataTransfer.setData("foodName", foodDiv.dataset.name);
     e.dataTransfer.setData("foodLevel", foodDiv.dataset.level);
@@ -116,12 +126,12 @@ function dragStart(e){
     if(img) e.dataTransfer.setDragImage(img, img.width/2, img.height/2);
 }
 
-function touchStart(e){ draggingFood = e.currentTarget; }
+function touchStart(e) { draggingFood = e.currentTarget; }
 
-pyramidLevels.forEach(level=>{
-    level.addEventListener("dragover", e=>{ e.preventDefault(); level.classList.add("highlight"); });
-    level.addEventListener("dragleave", e=>{ level.classList.remove("highlight"); });
-    level.addEventListener("drop", e=>{
+pyramidLevels.forEach(level => {
+    level.addEventListener("dragover", e => { e.preventDefault(); level.classList.add("highlight"); });
+    level.addEventListener("dragleave", e => { level.classList.remove("highlight"); });
+    level.addEventListener("drop", e => {
         e.preventDefault();
         level.classList.remove("highlight");
         const foodName = e.dataTransfer.getData("foodName");
@@ -129,8 +139,8 @@ pyramidLevels.forEach(level=>{
         handlePlacement(foodName, foodLevel, level);
     });
 
-    level.addEventListener("touchend", e=>{
-        if(!draggingFood) return;
+    level.addEventListener("touchend", e => {
+        if (!draggingFood) return;
         const foodName = draggingFood.dataset.name;
         const foodLevel = draggingFood.dataset.level;
         handlePlacement(foodName, foodLevel, level);
@@ -138,16 +148,19 @@ pyramidLevels.forEach(level=>{
     });
 });
 
-function handlePlacement(foodName, foodLevel, targetLevel){
+// ======================
+// Handle Placement
+// ======================
+function handlePlacement(foodName, foodLevel, targetLevel) {
     const target = targetLevel.dataset.level;
-    const foodIndex = levelFoods.findIndex(f=>f.name===foodName);
-    if(foodIndex===-1) return;
+    const foodIndex = levelFoods.findIndex(f => f.name === foodName);
+    if(foodIndex === -1) return;
 
-    if(foodLevel === target){
+    if(foodLevel === target) {
         score += 10;
         scoreDisplay.textContent = score;
 
-        const foodEl = Array.from(foodPanel.children).find(f=>f.dataset.name===foodName);
+        const foodEl = Array.from(foodPanel.children).find(f => f.dataset.name === foodName);
         const img = foodEl.querySelector("img");
         const targetRect = targetLevel.getBoundingClientRect();
         const foodRect = foodEl.getBoundingClientRect();
@@ -159,7 +172,7 @@ function handlePlacement(foodName, foodLevel, targetLevel){
         img.style.transform = `translate(${dx}px, ${dy}px) scale(0.5)`;
         img.style.transition = "transform 0.5s ease";
 
-        setTimeout(()=>{
+        setTimeout(() => {
             img.remove();
             const newImg = document.createElement("img");
             newImg.src = levelFoods[foodIndex].img;
@@ -170,59 +183,69 @@ function handlePlacement(foodName, foodLevel, targetLevel){
             targetLevel.appendChild(newImg);
 
             foodEl.remove();
-            levelFoods.splice(foodIndex,1);
+            levelFoods.splice(foodIndex, 1);
 
             feedback.textContent = "✅ Correct!";
             checkLevelComplete();
-        },500);
+        }, 500);
 
     } else {
         feedback.textContent = "❌ Wrong placement!";
-        showModal("Try Again!", ()=>initLevel(currentLevel));
+        showModal("Try Again!", () => initLevel(currentLevel));
     }
 }
 
-function checkLevelComplete(){
-    if(levelFoods.length===0){
-        let highestUnlocked = parseInt(localStorage.getItem("highestUnlocked")) || 1;
-        if(currentLevel >= highestUnlocked && currentLevel < maxLevel){
+// ======================
+// Check Level Completion
+// ======================
+function checkLevelComplete() {
+    if(levelFoods.length === 0) {
+        let storedUnlocked = parseInt(localStorage.getItem("highestUnlocked")) || 1;
+        if(currentLevel >= storedUnlocked && currentLevel < maxLevel) {
             localStorage.setItem("highestUnlocked", currentLevel + 1);
         }
 
-        if(currentLevel<maxLevel){
-            showModal(`🎉 Passed Level ${currentLevel}! Now Level ${currentLevel+1}`, ()=>{
+        if(currentLevel < maxLevel) {
+            showModal(`🎉 Passed Level ${currentLevel}! Now Level ${currentLevel + 1}`, () => {
                 currentLevel++;
                 initLevel(currentLevel);
             });
         } else {
-            showModal("🏆 Congratulations! You completed all levels!", ()=>{
-                currentLevel=1;
-                score=0;
+            showModal("🏆 Congratulations! You completed all levels!", () => {
+                currentLevel = 1;
+                score = 0;
                 initLevel(currentLevel);
             });
         }
     }
 }
 
-function showModal(message, callback){
+// ======================
+// Modal
+// ======================
+function showModal(message, callback) {
     modalMessage.textContent = message;
     modal.style.display = "flex";
-    modalBtn.onclick = ()=>{
+    modalBtn.onclick = () => {
         modal.style.display = "none";
         callback();
     };
 }
 
-playAgainBtn.addEventListener("click", ()=>{
+// ======================
+// Buttons
+// ======================
+playAgainBtn.addEventListener("click", () => {
     score = 0;
     currentLevel = 1;
     initLevel(currentLevel);
 });
 
-// Back to Home
-homeBtn.addEventListener("click", ()=>{
+homeBtn.addEventListener("click", () => {
     window.location.href = "index.html";
 });
 
+// ======================
 // Start Game
+// ======================
 initLevel(currentLevel);
