@@ -3,22 +3,697 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Level</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Select Level - Healthy Plate Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Bubblegum Sans', cursive;
+            background-color: #a8e6cf;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20,50 Q50,10 80,50 T140,50" stroke="%2390d5b9" fill="none" stroke-width="2"/></svg>');
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ff6b6b;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #e65c5c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .music-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #e65c5c;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn.muted {
+            background-color: #888;
+            box-shadow: 0 4px 0 #666;
+        }
+
+        .music-btn.muted:active {
+            box-shadow: 0 1px 0 #666;
+        }
+
+        /* Decorative elements */
+        .decoration {
+            position: fixed;
+            z-index: 0;
+        }
+
+        .fruit-1 {
+            top: 10%;
+            left: 5%;
+            width: 80px;
+            height: 80px;
+            background-color: #ff9a9e;
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .fruit-2 {
+            top: 15%;
+            right: 8%;
+            width: 60px;
+            height: 60px;
+            background-color: #ffd6a5;
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .fruit-3 {
+            bottom: 20%;
+            left: 10%;
+            width: 70px;
+            height: 70px;
+            background-color: #caffbf;
+            border-radius: 50%;
+            animation: float 7s infinite ease-in-out reverse;
+        }
+
+        .veggie-1 {
+            bottom: 15%;
+            right: 5%;
+            width: 90px;
+            height: 50px;
+            background-color: #9bf6ff;
+            border-radius: 50%;
+            animation: float 9s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Header */
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.8rem;
+            color: #ff6b6b;
+            text-shadow: 4px 4px 0 #ffd166, 
+                         8px 8px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #06d6a0;
+            background-color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 0 #06d6a0;
+            margin-bottom: 10px;
+        }
+
+        .level-icon {
+            width: 120px;
+            height: 120px;
+            background-color: #9d65c9;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 0 #8a54b5, inset 0 0 20px rgba(255, 255, 255, 0.8);
+            border: 8px solid #ff9e6d;
+        }
+
+        .level-icon i {
+            font-size: 4rem;
+            color: white;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Levels Grid */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .level-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #ddd;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid;
+            min-height: 180px;
+        }
+
+        .level-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 #ddd;
+        }
+
+        .level-card:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 0 #ddd;
+        }
+
+        .level-card.locked {
+            filter: grayscale(0.7);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .level-card.locked:hover {
+            transform: none;
+            box-shadow: 0 8px 0 #ddd;
+        }
+
+        .level-number {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+
+        .level-name {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .level-difficulty {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .difficulty-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .difficulty-easy .difficulty-dot {
+            background-color: #06d6a0;
+        }
+
+        .difficulty-medium .difficulty-dot {
+            background-color: #ffd166;
+        }
+
+        .difficulty-hard .difficulty-dot {
+            background-color: #ff6b6b;
+        }
+
+        .level-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .level-foods {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .level-reward {
+            font-size: 1.1rem;
+            color: #9d65c9;
+            font-weight: bold;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #888;
+            font-size: 1.2rem;
+        }
+
+        .check-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #06d6a0;
+            font-size: 1.5rem;
+        }
+
+        /* Level colors */
+        .level-1 { border-color: #06d6a0; }
+        .level-2 { border-color: #ffd166; }
+        .level-3 { border-color: #ff9e6d; }
+        .level-4 { border-color: #ff6b6b; }
+        .level-5 { border-color: #9d65c9; }
+        .level-6 { border-color: #9bf6ff; }
+        .level-7 { border-color: #ff9a9e; }
+        .level-8 { border-color: #caffbf; }
+        .level-9 { border-color: #ffd6a5; }
+        .level-10 { border-color: #a8e6cf; }
+
+    
+        /* Back Button */
+        .back-btn {
+            background-color: #06d6a0;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 30px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #04b486;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .back-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #04b486;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 #04b486;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .title {
+                font-size: 2.2rem;
+                text-shadow: 3px 3px 0 #ffd166, 
+                             6px 6px 0 rgba(0, 0, 0, 0.1);
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .level-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .level-icon i {
+                font-size: 3rem;
+            }
+            
+            .levels-grid {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+            
+            .level-card {
+                min-height: 160px;
+                padding: 15px;
+            }
+            
+            .level-number {
+                font-size: 2rem;
+            }
+            
+            .level-name {
+                font-size: 1.1rem;
+            }
+            
+            .back-btn {
+                font-size: 1.3rem;
+                padding: 16px;
+            }
+            
+            .music-player {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .music-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .level-number {
+                font-size: 1.8rem;
+            }
+            
+            .level-name {
+                font-size: 1rem;
+            }
+            
+            .level-description {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
-    <div class="home-container">
-        <h1>Select Level</h1>
-        <p style="font-size: 1.2em; margin-bottom: 20px;">
-            Choose a level to start playing!
-        </p>
-
-        <div class="levels"></div>
-
-        <button class="back-btn" onclick="location.href='index.html'">⬅ Back to Home</button>
+    <!-- Music Player -->
+    <div class="music-player">
+        <button id="musicToggle" class="music-btn">
+            <i class="fas fa-volume-up"></i>
+        </button>
     </div>
 
-    <script src="js/levels.js"></script>
+    <!-- Decorative elements -->
+    <div class="decoration fruit-1"></div>
+    <div class="decoration fruit-2"></div>
+    <div class="decoration fruit-3"></div>
+    <div class="decoration veggie-1"></div>
+
+    <div class="game-container">
+        <!-- Header with title -->
+        <div class="title-container">
+            <div class="level-icon">
+                <i class="fas fa-flag-checkered"></i>
+            </div>
+            <h1 class="title">Select Level</h1>
+            <p class="subtitle">Match foods to their correct categories!</p>
+        </div>
+
+
+        <!-- Levels Grid - Will be populated by JavaScript -->
+        <div class="levels-grid" id="levelsGrid">
+            <!-- Level cards will be inserted here -->
+        </div>
+
+        <!-- Back Button -->
+        <button class="back-btn" onclick="location.href='index.html'">
+            <i class="fas fa-home"></i> Back to Home
+        </button>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="assets/sfx/background.mp3" type="audio/mpeg">
+        <source src="assets/sfx/background.mp3" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Music Player
+            const audio = document.getElementById('backgroundMusic');
+            const musicToggle = document.getElementById('musicToggle');
+            const musicIcon = musicToggle.querySelector('i');
+            
+            audio.volume = 0.5;
+            let musicStarted = false;
+            
+            function startMusic() {
+                if (!musicStarted) {
+                    audio.play().then(() => {
+                        musicStarted = true;
+                    }).catch(error => {
+                        console.log("Autoplay prevented. User interaction required.");
+                    });
+                }
+            }
+            
+            setTimeout(startMusic, 1000);
+            
+            musicToggle.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play();
+                    musicIcon.classList.remove('fa-volume-mute');
+                    musicIcon.classList.add('fa-volume-up');
+                    musicToggle.classList.remove('muted');
+                } else {
+                    audio.pause();
+                    musicIcon.classList.remove('fa-volume-up');
+                    musicIcon.classList.add('fa-volume-mute');
+                    musicToggle.classList.add('muted');
+                }
+            });
+            
+            const allButtons = document.querySelectorAll('button');
+            allButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!musicStarted) startMusic();
+                });
+            });
+            
+            // Level Data
+            const levels = [
+                {
+                    number: 1,
+                    name: "Beginner's Plate",
+                    difficulty: "easy",
+                    description: "3 foods to sort",
+                    foods: "1 GO + 1 GROW + 1 GLOW",
+                    unlocked: true,
+                    completed: localStorage.getItem("level1Completed") === "true",
+                    reward: "🍎"
+                },
+                {
+                    number: 2,
+                    name: "Small Meal",
+                    difficulty: "easy",
+                    description: "6 foods to sort",
+                    foods: "2 GO + 2 GROW + 2 GLOW",
+                    unlocked: localStorage.getItem("level1Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 2,
+                    completed: localStorage.getItem("level2Completed") === "true",
+                    reward: "🥦"
+                },
+                {
+                    number: 3,
+                    name: "Balanced Lunch",
+                    difficulty: "medium",
+                    description: "9 foods to sort",
+                    foods: "3 GO + 3 GROW + 3 GLOW",
+                    unlocked: localStorage.getItem("level2Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 3,
+                    completed: localStorage.getItem("level3Completed") === "true",
+                    reward: "🍗"
+                },
+                {
+                    number: 4,
+                    name: "Family Dinner",
+                    difficulty: "medium",
+                    description: "12 foods to sort",
+                    foods: "4 GO + 4 GROW + 4 GLOW",
+                    unlocked: localStorage.getItem("level3Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 4,
+                    completed: localStorage.getItem("level4Completed") === "true",
+                    reward: "🍽️"
+                },
+                {
+                    number: 5,
+                    name: "Party Platter",
+                    difficulty: "medium",
+                    description: "15 foods to sort",
+                    foods: "5 GO + 5 GROW + 5 GLOW",
+                    unlocked: localStorage.getItem("level4Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 5,
+                    completed: localStorage.getItem("level5Completed") === "true",
+                    reward: "🎉"
+                },
+                {
+                    number: 6,
+                    name: "Buffet Challenge",
+                    difficulty: "hard",
+                    description: "18 foods to sort",
+                    foods: "6 GO + 6 GROW + 6 GLOW",
+                    unlocked: localStorage.getItem("level5Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 6,
+                    completed: localStorage.getItem("level6Completed") === "true",
+                    reward: "🥘"
+                },
+                {
+                    number: 7,
+                    name: "Feast Mode",
+                    difficulty: "hard",
+                    description: "21 foods to sort",
+                    foods: "7 GO + 7 GROW + 7 GLOW",
+                    unlocked: localStorage.getItem("level6Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 7,
+                    completed: localStorage.getItem("level7Completed") === "true",
+                    reward: "👨‍🍳"
+                },
+                {
+                    number: 8,
+                    name: "Master Chef",
+                    difficulty: "hard",
+                    description: "24 foods to sort",
+                    foods: "8 GO + 8 GROW + 8 GLOW",
+                    unlocked: localStorage.getItem("level7Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 8,
+                    completed: localStorage.getItem("level8Completed") === "true",
+                    reward: "⭐"
+                },
+                {
+                    number: 9,
+                    name: "Food Expert",
+                    difficulty: "hard",
+                    description: "27 foods to sort",
+                    foods: "9 GO + 9 GROW + 9 GLOW",
+                    unlocked: localStorage.getItem("level8Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 9,
+                    completed: localStorage.getItem("level9Completed") === "true",
+                    reward: "🏅"
+                },
+                {
+                    number: 10,
+                    name: "Nutrition Champion",
+                    difficulty: "hard",
+                    description: "30 foods to sort",
+                    foods: "10 GO + 10 GROW + 10 GLOW",
+                    unlocked: localStorage.getItem("level9Completed") === "true" || 
+                              parseInt(localStorage.getItem("highestUnlocked") || 1) >= 10,
+                    completed: localStorage.getItem("level10Completed") === "true",
+                    reward: "🏆"
+                }
+            ];
+            
+            // Generate Levels Grid
+            const levelsGrid = document.getElementById('levelsGrid');
+            
+            levels.forEach(level => {
+                const levelCard = document.createElement('div');
+                levelCard.className = `level-card level-${level.number} ${level.unlocked ? '' : 'locked'}`;
+                
+                if (level.unlocked) {
+                    levelCard.addEventListener('click', function() {
+                        // Set the selected level in localStorage
+                        localStorage.setItem("selectedLevel", level.number.toString());
+                        
+                        // Animate the card
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                            // Redirect to the game page
+                            window.location.href = "game.html";
+                        }, 200);
+                    });
+                }
+                
+                // Difficulty dots
+                let difficultyDots = '';
+                let dotCount = level.difficulty === 'easy' ? 1 : level.difficulty === 'medium' ? 2 : 3;
+                
+                for (let i = 0; i < 3; i++) {
+                    difficultyDots += `<div class="difficulty-dot" style="opacity: ${i < dotCount ? '1' : '0.3'}; background-color: ${
+                        level.difficulty === 'easy' ? '#06d6a0' : 
+                        level.difficulty === 'medium' ? '#ffd166' : '#ff6b6b'
+                    }"></div>`;
+                }
+                
+                levelCard.innerHTML = `
+                    ${!level.unlocked ? '<i class="fas fa-lock lock-icon"></i>' : ''}
+                    ${level.completed ? '<i class="fas fa-check-circle check-icon"></i>' : ''}
+                    <div class="level-number">${level.number}</div>
+                    <div class="level-name">${level.name}</div>
+                    <div class="level-difficulty difficulty-${level.difficulty}">
+                        ${difficultyDots}
+                    </div>
+                    <div class="level-description">${level.description}</div>
+                    <div class="level-foods">${level.foods}</div>
+                    <div class="level-reward">Reward: ${level.reward}</div>
+                `;
+                
+                levelsGrid.appendChild(levelCard);
+            });
+            
+            // Calculate and update progress
+            let completedCount = 0;
+            for (let i = 1; i <= 10; i++) {
+                if (localStorage.getItem(`level${i}Completed`) === "true") {
+                    completedCount++;
+                }
+            }
+            
+            const totalLevels = 10;
+            const progressPercentage = (completedCount / totalLevels) * 100;
+            
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            setTimeout(() => {
+                progressFill.style.width = `${progressPercentage}%`;
+                progressText.textContent = `${completedCount} of ${totalLevels} levels completed`;
+            }, 500);
+            
+            // Add floating animation to decorative elements
+            const decorations = document.querySelectorAll('.decoration');
+            decorations.forEach((deco, index) => {
+                const duration = 5 + Math.random() * 5;
+                deco.style.animationDuration = `${duration}s`;
+            });
+            
+            console.log("Levels page loaded with accurate descriptions! 🎮");
+        });
+    </script>
 </body>
 </html>

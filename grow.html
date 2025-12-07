@@ -2,22 +2,966 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Grow Foods</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Foods - Healthy Plate Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Bubblegum Sans', cursive;
+            background-color: #a8e6cf;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20,50 Q50,10 80,50 T140,50" stroke="%2390d5b9" fill="none" stroke-width="2"/></svg>');
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ff6b6b;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #e65c5c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .music-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #e65c5c;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn.muted {
+            background-color: #888;
+            box-shadow: 0 4px 0 #666;
+        }
+
+        .music-btn.muted:active {
+            box-shadow: 0 1px 0 #666;
+        }
+
+        /* Decorative elements - GROW Foods theme (protein colors) */
+        .decoration {
+            position: fixed;
+            z-index: 0;
+        }
+
+        .protein-1 {
+            top: 10%;
+            left: 5%;
+            width: 80px;
+            height: 80px;
+            background-color: #ff6b6b;
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .protein-2 {
+            top: 15%;
+            right: 8%;
+            width: 60px;
+            height: 60px;
+            background-color: #ff9a9e;
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .protein-3 {
+            bottom: 20%;
+            left: 10%;
+            width: 70px;
+            height: 70px;
+            background-color: #ffd6a5;
+            border-radius: 50%;
+            animation: float 7s infinite ease-in-out reverse;
+        }
+
+        .dairy-1 {
+            bottom: 15%;
+            right: 5%;
+            width: 90px;
+            height: 50px;
+            background-color: #9d65c9;
+            border-radius: 50%;
+            animation: float 9s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Header */
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.8rem;
+            color: #ff6b6b;
+            text-shadow: 4px 4px 0 #ffd6a5, 
+                         8px 8px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .trivia {
+            font-size: 1.5rem;
+            color: white;
+            background-color: #ff6b6b;
+            padding: 12px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 0 #e65c5c;
+            margin-bottom: 10px;
+            max-width: 90%;
+            line-height: 1.4;
+        }
+
+        .category-icon {
+            width: 120px;
+            height: 120px;
+            background-color: #ff6b6b;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 0 #e65c5c, inset 0 0 20px rgba(255, 255, 255, 0.8);
+            border: 8px solid #ffd6a5;
+        }
+
+        .category-icon i {
+            font-size: 4rem;
+            color: white;
+            animation: growPulse 2s infinite;
+        }
+
+        @keyframes growPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* Food Grid */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .food-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #ddd;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #ff6b6b;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 #ddd;
+            border-color: #ffd6a5;
+        }
+
+        .food-card:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 0 #ddd;
+        }
+
+        .food-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .food-card:hover .food-emoji {
+            transform: scale(1.2);
+        }
+
+        .food-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .food-tag {
+            font-size: 0.9rem;
+            color: white;
+            background-color: #ffd6a5;
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 8px;
+            font-size: 0.8rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Growth Chart */
+        .growth-chart {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 30px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 6px 0 #ddd;
+            text-align: center;
+            border: 4px solid #ff6b6b;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            margin-bottom: 15px;
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .chart-bars {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 120px;
+            margin-bottom: 15px;
+        }
+
+        .chart-bar {
+            width: 30px;
+            background: linear-gradient(to top, #ff6b6b, #ffd6a5);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+        }
+
+        .bar-1 { height: 40px; }
+        .bar-2 { height: 70px; }
+        .bar-3 { height: 100px; }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .chart-text {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Back Button */
+        .back-btn {
+            background-color: #ff6b6b;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 30px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #e65c5c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .back-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #e65c5c;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 #e65c5c;
+        }
+
+        /* Modal Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border: 8px solid #ff6b6b;
+            animation: modalPop 0.4s ease;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-emoji {
+            font-size: 3.5rem;
+            background-color: #ffd6a5;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #ff6b6b;
+        }
+
+        .modal-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            color: #ff6b6b;
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #ff6b6b;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-section {
+            margin-bottom: 15px;
+        }
+
+        .modal-section-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: #ff6b6b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-section-title i {
+            color: #ffd6a5;
+        }
+
+        .modal-section-content {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .strength-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .strength-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .strength-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #ffd6a5;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            background-color: #ff6b6b;
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 0 #e65c5c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #e65c5c;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #e65c5c;
+        }
+
+        /* Fun Facts */
+        .fun-fact {
+            background-color: #ffd6a5;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #333;
+            font-style: italic;
+            border: 3px dashed #ff6b6b;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .title {
+                font-size: 2.2rem;
+                text-shadow: 3px 3px 0 #ffd6a5, 
+                             6px 6px 0 rgba(0, 0, 0, 0.1);
+            }
+            
+            .trivia {
+                font-size: 1.2rem;
+                padding: 10px 20px;
+            }
+            
+            .category-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .category-icon i {
+                font-size: 3rem;
+            }
+            
+            .food-grid {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+            
+            .food-card {
+                min-height: 150px;
+                padding: 15px;
+            }
+            
+            .food-emoji {
+                font-size: 2.5rem;
+            }
+            
+            .food-name {
+                font-size: 1.2rem;
+            }
+            
+            .back-btn {
+                font-size: 1.3rem;
+                padding: 16px;
+            }
+            
+            .music-player {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .music-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .modal-emoji {
+                width: 60px;
+                height: 60px;
+                font-size: 2.5rem;
+            }
+            
+            .modal-title {
+                font-size: 1.5rem;
+            }
+            
+            .growth-chart {
+                padding: 15px;
+            }
+            
+            .chart-title {
+                font-size: 1.3rem;
+            }
+            
+            .chart-bars {
+                height: 100px;
+            }
+            
+            .chart-bar {
+                width: 25px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .food-name {
+                font-size: 1.1rem;
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
+            
+            .chart-bar {
+                width: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Music Player -->
+    <div class="music-player">
+        <button id="musicToggle" class="music-btn">
+            <i class="fas fa-volume-up"></i>
+        </button>
+    </div>
 
-<h1 class="title">GROW FOODS</h1>
-<p class="trivia">Grow foods help build strong muscles and bones!</p>
+    <!-- Decorative elements -->
+    <div class="decoration protein-1"></div>
+    <div class="decoration protein-2"></div>
+    <div class="decoration protein-3"></div>
+    <div class="decoration dairy-1"></div>
 
-<div class="food-list" id="category-list"></div>
+    <!-- Modal Popup -->
+    <div class="modal-overlay" id="foodModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-emoji" id="modalEmoji"></div>
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-info-circle"></i> About
+                    </h3>
+                    <p class="modal-section-content" id="modalDescription"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-dumbbell"></i> Strength Builder
+                    </h3>
+                    <p class="modal-section-content" id="modalBenefits"></p>
+                    <div class="strength-level" id="modalStrength"></div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-apple-alt"></i> Key Nutrients
+                    </h3>
+                    <p class="modal-section-content" id="modalNutrients"></p>
+                </div>
+                
+                <div class="fun-fact" id="modalFact"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-btn" id="modalOkBtn">
+                    <i class="fas fa-check"></i> Got it!
+                </button>
+            </div>
+        </div>
+    </div>
 
-<button class="back-btn" onclick="window.location.href='index.html'">⬅ Back</button>
+    <div class="game-container">
+        <!-- Header with title -->
+        <div class="title-container">
+            <div class="category-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <h1 class="title">GROW FOODS</h1>
+            <p class="trivia">Grow foods help build strong muscles and bones!</p>
+        </div>
 
-<script src="js/category.js"></script>
-<script>
-    loadCategory("GROW");
-</script>
+        <!-- Growth Chart -->
+        <div class="growth-chart">
+            <div class="chart-title">Growth Power Chart</div>
+            <div class="chart-bars">
+                <div class="chart-bar bar-1"></div>
+                <div class="chart-bar bar-2"></div>
+                <div class="chart-bar bar-3"></div>
+            </div>
+            <div class="chart-labels">
+                <span>Muscle</span>
+                <span>Bones</span>
+                <span>Strength</span>
+            </div>
+            <div class="chart-text">GROW Foods make you taller and stronger!</div>
+        </div>
 
+        <!-- Food Grid -->
+        <div class="food-grid" id="category-list">
+            <!-- Food cards will be inserted here by JavaScript -->
+        </div>
+
+        <!-- Back Button -->
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i> Back to Home
+        </button>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="assets/sfx/background.mp3" type="audio/mpeg">
+        <source src="assets/sfx/background.mp3" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Music Player
+            const audio = document.getElementById('backgroundMusic');
+            const musicToggle = document.getElementById('musicToggle');
+            const musicIcon = musicToggle.querySelector('i');
+            
+            audio.volume = 0.5;
+            let musicStarted = false;
+            
+            function startMusic() {
+                if (!musicStarted) {
+                    audio.play().then(() => {
+                        musicStarted = true;
+                    }).catch(error => {
+                        console.log("Autoplay prevented. User interaction required.");
+                    });
+                }
+            }
+            
+            setTimeout(startMusic, 1000);
+            
+            musicToggle.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play();
+                    musicIcon.classList.remove('fa-volume-mute');
+                    musicIcon.classList.add('fa-volume-up');
+                    musicToggle.classList.remove('muted');
+                } else {
+                    audio.pause();
+                    musicIcon.classList.remove('fa-volume-up');
+                    musicIcon.classList.add('fa-volume-mute');
+                    musicToggle.classList.add('muted');
+                }
+            });
+            
+            const allButtons = document.querySelectorAll('button');
+            allButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!musicStarted) startMusic();
+                });
+            });
+            
+            // Grow Foods Data with detailed information
+            const growFoods = [
+                {
+                    name: "Chicken",
+                    emoji: "🍗",
+                    description: "Chicken is a lean meat that comes from birds. It's one of the most popular meats in the world and can be grilled, baked, or fried!",
+                    benefits: "Builds strong muscles, repairs body tissues, helps grow taller, and supports immune system.",
+                    nutrients: "Protein, Vitamin B12, iron, zinc, and selenium.",
+                    strengthLevel: 5,
+                    fact: "Chicken is the most common type of poultry in the world - there are more chickens than people!"
+                },
+                {
+                    name: "Egg",
+                    emoji: "🥚",
+                    description: "Eggs come from chickens and have a hard shell. Inside is the yolk (yellow part) and egg white (clear part), both packed with nutrients!",
+                    benefits: "Builds muscles, supports brain development, helps eyes stay healthy, and provides energy.",
+                    nutrients: "Protein, Vitamin D, choline, selenium, and Vitamin B12.",
+                    strengthLevel: 5,
+                    fact: "The color of an egg's shell depends on the chicken's breed - it doesn't affect nutrition!"
+                },
+                {
+                    name: "Fish",
+                    emoji: "🐟",
+                    description: "Fish live in water and are caught from oceans, rivers, and lakes. They're swimming protein powerhouses!",
+                    benefits: "Builds brain power, strengthens heart, supports eye health, and reduces inflammation.",
+                    nutrients: "Protein, Omega-3 fatty acids, Vitamin D, selenium, and iodine.",
+                    strengthLevel: 4,
+                    fact: "Salmon can jump waterfalls up to 12 feet high during their migration!"
+                },
+                {
+                    name: "Beef",
+                    emoji: "🥩",
+                    description: "Beef comes from cows and is a rich source of protein. It's often made into steaks, burgers, and meatballs.",
+                    benefits: "Builds strong muscles, helps blood carry oxygen, supports immune system, and provides energy.",
+                    nutrients: "Protein, iron, zinc, Vitamin B12, and creatine.",
+                    strengthLevel: 5,
+                    fact: "A cow has four stomachs to help digest all the grass it eats!"
+                },
+                {
+                    name: "Tofu",
+                    emoji: "🧈",
+                    description: "Tofu is made from soybeans and has a soft, custard-like texture. It's a great plant-based protein for vegetarians!",
+                    benefits: "Builds muscles, strengthens bones, supports heart health, and helps regulate hormones.",
+                    nutrients: "Protein, calcium, iron, magnesium, and phytoestrogens.",
+                    strengthLevel: 4,
+                    fact: "Tofu was invented in China over 2,000 years ago by accident!"
+                },
+                {
+                    name: "Milk",
+                    emoji: "🥛",
+                    description: "Milk comes from cows and is white and creamy. It's often drunk with meals or used to make other dairy products.",
+                    benefits: "Builds strong bones and teeth, helps muscles work properly, supports nerve function, and hydrates.",
+                    nutrients: "Calcium, protein, Vitamin D, potassium, and Vitamin B12.",
+                    strengthLevel: 5,
+                    fact: "It takes about 10 pounds of milk to make 1 pound of cheese!"
+                },
+                {
+                    name: "Cheese",
+                    emoji: "🧀",
+                    description: "Cheese is made from milk that has been fermented and pressed. It comes in many varieties like cheddar, mozzarella, and Swiss!",
+                    benefits: "Builds strong bones, supports muscle growth, helps teeth stay healthy, and provides energy.",
+                    nutrients: "Calcium, protein, phosphorus, zinc, and Vitamin A.",
+                    strengthLevel: 4,
+                    fact: "The world's most expensive cheese costs over $1,000 per pound - it's made from donkey milk!"
+                },
+                {
+                    name: "Yogurt",
+                    emoji: "🍶",
+                    description: "Yogurt is made by fermenting milk with friendly bacteria. It's creamy, tangy, and often eaten with fruit or honey.",
+                    benefits: "Builds strong bones, supports digestion with probiotics, helps immune system, and provides protein.",
+                    nutrients: "Protein, calcium, probiotics, Vitamin B12, and phosphorus.",
+                    strengthLevel: 4,
+                    fact: "Yogurt has been eaten for over 5,000 years - ancient people carried milk in animal skins that naturally fermented!"
+                },
+                {
+                    name: "Pork",
+                    emoji: "🐖",
+                    description: "Pork comes from pigs and is used to make bacon, ham, sausages, and pork chops. It should always be cooked thoroughly.",
+                    benefits: "Builds muscles, provides energy, supports brain function, and helps body use other nutrients.",
+                    nutrients: "Protein, thiamine (Vitamin B1), zinc, selenium, and Vitamin B12.",
+                    strengthLevel: 5,
+                    fact: "Pigs are very intelligent animals - they can learn tricks faster than dogs!"
+                },
+                {
+                    name: "Shrimp",
+                    emoji: "🦐",
+                    description: "Shrimp are small sea creatures with a hard shell. They turn pink when cooked and are delicious in many dishes.",
+                    benefits: "Builds muscles, supports brain health, helps make red blood cells, and provides antioxidants.",
+                    nutrients: "Protein, selenium, Vitamin B12, iodine, and astaxanthin (antioxidant).",
+                    strengthLevel: 3,
+                    fact: "Shrimp are related to lobsters and crabs, and some species can glow in the dark!"
+                }
+            ];
+            
+            // Generate Food Grid
+            const foodGrid = document.getElementById('category-list');
+            
+            growFoods.forEach(food => {
+                const foodCard = document.createElement('div');
+                foodCard.className = 'food-card';
+                
+                foodCard.innerHTML = `
+                    <div class="food-emoji">${food.emoji}</div>
+                    <div class="food-name">${food.name}</div>
+                    <div class="food-tag">GROW FOOD</div>
+                    <div class="click-hint">Click for strength info!</div>
+                `;
+                
+                foodCard.addEventListener('click', function() {
+                    // Play click sound (optional)
+                    console.log(`Clicked on ${food.name}`);
+                    
+                    // Show modal with food details
+                    showFoodModal(food);
+                });
+                
+                // Add hover effect
+                foodCard.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 13px 0 #ddd';
+                });
+                
+                foodCard.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 8px 0 #ddd';
+                });
+                
+                foodGrid.appendChild(foodCard);
+            });
+            
+            // Modal Elements
+            const modal = document.getElementById('foodModal');
+            const modalEmoji = document.getElementById('modalEmoji');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const modalBenefits = document.getElementById('modalBenefits');
+            const modalNutrients = document.getElementById('modalNutrients');
+            const modalFact = document.getElementById('modalFact');
+            const modalStrength = document.getElementById('modalStrength');
+            const modalClose = document.getElementById('modalClose');
+            const modalOkBtn = document.getElementById('modalOkBtn');
+            
+            // Function to show modal
+            function showFoodModal(food) {
+                modalEmoji.textContent = food.emoji;
+                modalTitle.textContent = food.name;
+                modalDescription.textContent = food.description;
+                modalBenefits.textContent = food.benefits;
+                modalNutrients.textContent = food.nutrients;
+                modalFact.textContent = food.fact;
+                
+                // Create strength level visualization
+                let strengthDots = '';
+                for (let i = 0; i < 5; i++) {
+                    strengthDots += `<div class="strength-dot" style="opacity: ${i < food.strengthLevel ? '1' : '0.3'}"></div>`;
+                }
+                
+                modalStrength.innerHTML = `
+                    <span>Strength Power:</span>
+                    <div class="strength-dots">${strengthDots}</div>
+                `;
+                
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // Function to close modal
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Close modal events
+            modalClose.addEventListener('click', closeModal);
+            modalOkBtn.addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+            
+            // Add floating animation to decorative elements
+            const decorations = document.querySelectorAll('.decoration');
+            decorations.forEach((deco, index) => {
+                const duration = 5 + Math.random() * 5;
+                deco.style.animationDuration = `${duration}s`;
+            });
+            
+            // Animate growth chart bars
+            setTimeout(() => {
+                document.querySelector('.bar-1').style.height = '40px';
+                document.querySelector('.bar-2').style.height = '70px';
+                document.querySelector('.bar-3').style.height = '100px';
+            }, 500);
+            
+            console.log("Grow Foods page loaded! 🍗💪");
+        });
+    </script>
 </body>
 </html>

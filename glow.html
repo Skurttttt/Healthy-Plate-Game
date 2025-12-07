@@ -2,22 +2,828 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Glow Foods</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow Foods - Healthy Plate Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Bubblegum Sans', cursive;
+            background-color: #a8e6cf;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20,50 Q50,10 80,50 T140,50" stroke="%2390d5b9" fill="none" stroke-width="2"/></svg>');
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ff6b6b;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #e65c5c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .music-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #e65c5c;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .music-btn.muted {
+            background-color: #888;
+            box-shadow: 0 4px 0 #666;
+        }
+
+        .music-btn.muted:active {
+            box-shadow: 0 1px 0 #666;
+        }
+
+        /* Decorative elements */
+        .decoration {
+            position: fixed;
+            z-index: 0;
+        }
+
+        .fruit-1 {
+            top: 10%;
+            left: 5%;
+            width: 80px;
+            height: 80px;
+            background-color: #caffbf;
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .fruit-2 {
+            top: 15%;
+            right: 8%;
+            width: 60px;
+            height: 60px;
+            background-color: #9bf6ff;
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .fruit-3 {
+            bottom: 20%;
+            left: 10%;
+            width: 70px;
+            height: 70px;
+            background-color: #ffd6a5;
+            border-radius: 50%;
+            animation: float 7s infinite ease-in-out reverse;
+        }
+
+        .veggie-1 {
+            bottom: 15%;
+            right: 5%;
+            width: 90px;
+            height: 50px;
+            background-color: #fdffb6;
+            border-radius: 50%;
+            animation: float 9s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Header */
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.8rem;
+            color: #06d6a0;
+            text-shadow: 4px 4px 0 #caffbf, 
+                         8px 8px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .trivia {
+            font-size: 1.5rem;
+            color: white;
+            background-color: #06d6a0;
+            padding: 12px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 6px 0 #04b486;
+            margin-bottom: 10px;
+            max-width: 90%;
+            line-height: 1.4;
+        }
+
+        .category-icon {
+            width: 120px;
+            height: 120px;
+            background-color: #06d6a0;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 10px 0 #04b486, inset 0 0 20px rgba(255, 255, 255, 0.8);
+            border: 8px solid #caffbf;
+        }
+
+        .category-icon i {
+            font-size: 4rem;
+            color: white;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { transform: scale(1); text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+            50% { transform: scale(1.1); text-shadow: 0 0 10px #fff, 0 0 20px #caffbf, 0 0 30px #caffbf; }
+        }
+
+        /* Food Grid */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .food-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #ddd;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #06d6a0;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 #ddd;
+            border-color: #caffbf;
+        }
+
+        .food-card:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 0 #ddd;
+        }
+
+        .food-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .food-card:hover .food-emoji {
+            transform: scale(1.2);
+        }
+
+        .food-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: #06d6a0;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .food-tag {
+            font-size: 0.9rem;
+            color: white;
+            background-color: #caffbf;
+            padding: 3px 10px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 8px;
+            font-size: 0.8rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Back Button */
+        .back-btn {
+            background-color: #06d6a0;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 30px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #04b486;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .back-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #04b486;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 #04b486;
+        }
+
+        /* Modal Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border: 8px solid #06d6a0;
+            animation: modalPop 0.4s ease;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-emoji {
+            font-size: 3.5rem;
+            background-color: #caffbf;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #06d6a0;
+        }
+
+        .modal-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            color: #06d6a0;
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #ff6b6b;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-section {
+            margin-bottom: 15px;
+        }
+
+        .modal-section-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: #06d6a0;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-section-title i {
+            color: #caffbf;
+        }
+
+        .modal-section-content {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            background-color: #06d6a0;
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 0 #04b486;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #04b486;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #04b486;
+        }
+
+        /* Fun Facts */
+        .fun-fact {
+            background-color: #caffbf;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #333;
+            font-style: italic;
+            border: 3px dashed #06d6a0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .title {
+                font-size: 2.2rem;
+                text-shadow: 3px 3px 0 #caffbf, 
+                             6px 6px 0 rgba(0, 0, 0, 0.1);
+            }
+            
+            .trivia {
+                font-size: 1.2rem;
+                padding: 10px 20px;
+            }
+            
+            .category-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .category-icon i {
+                font-size: 3rem;
+            }
+            
+            .food-grid {
+                grid-template-columns: 1fr;
+                max-width: 300px;
+            }
+            
+            .food-card {
+                min-height: 150px;
+                padding: 15px;
+            }
+            
+            .food-emoji {
+                font-size: 2.5rem;
+            }
+            
+            .food-name {
+                font-size: 1.2rem;
+            }
+            
+            .back-btn {
+                font-size: 1.3rem;
+                padding: 16px;
+            }
+            
+            .music-player {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .music-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .modal-emoji {
+                width: 60px;
+                height: 60px;
+                font-size: 2.5rem;
+            }
+            
+            .modal-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .food-name {
+                font-size: 1.1rem;
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Music Player -->
+    <div class="music-player">
+        <button id="musicToggle" class="music-btn">
+            <i class="fas fa-volume-up"></i>
+        </button>
+    </div>
 
-<h1 class="title">GLOW FOODS</h1>
-<p class="trivia">Glow foods keep your body healthy and protect you from sickness.</p>
+    <!-- Decorative elements -->
+    <div class="decoration fruit-1"></div>
+    <div class="decoration fruit-2"></div>
+    <div class="decoration fruit-3"></div>
+    <div class="decoration veggie-1"></div>
 
-<div class="food-list" id="category-list"></div>
+    <!-- Modal Popup -->
+    <div class="modal-overlay" id="foodModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-emoji" id="modalEmoji"></div>
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-info-circle"></i> About
+                    </h3>
+                    <p class="modal-section-content" id="modalDescription"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-heart"></i> Health Benefits
+                    </h3>
+                    <p class="modal-section-content" id="modalBenefits"></p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-apple-alt"></i> Key Nutrients
+                    </h3>
+                    <p class="modal-section-content" id="modalNutrients"></p>
+                </div>
+                
+                <div class="fun-fact" id="modalFact"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-btn" id="modalOkBtn">
+                    <i class="fas fa-check"></i> Got it!
+                </button>
+            </div>
+        </div>
+    </div>
 
-<button class="back-btn" onclick="window.location.href='index.html'">⬅ Back</button>
+    <div class="game-container">
+        <!-- Header with title -->
+        <div class="title-container">
+            <div class="category-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <h1 class="title">GLOW FOODS</h1>
+            <p class="trivia">Glow foods keep your body healthy and protect you from sickness!</p>
+        </div>
 
-<script src="js/category.js"></script>
-<script>
-    loadCategory("GLOW");
-</script>
+        <!-- Food Grid -->
+        <div class="food-grid" id="category-list">
+            <!-- Food cards will be inserted here by JavaScript -->
+        </div>
 
+        <!-- Back Button -->
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i> Back to Home
+        </button>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="assets/sfx/background.mp3" type="audio/mpeg">
+        <source src="assets/sfx/background.mp3" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Music Player
+            const audio = document.getElementById('backgroundMusic');
+            const musicToggle = document.getElementById('musicToggle');
+            const musicIcon = musicToggle.querySelector('i');
+            
+            audio.volume = 0.5;
+            let musicStarted = false;
+            
+            function startMusic() {
+                if (!musicStarted) {
+                    audio.play().then(() => {
+                        musicStarted = true;
+                    }).catch(error => {
+                        console.log("Autoplay prevented. User interaction required.");
+                    });
+                }
+            }
+            
+            setTimeout(startMusic, 1000);
+            
+            musicToggle.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play();
+                    musicIcon.classList.remove('fa-volume-mute');
+                    musicIcon.classList.add('fa-volume-up');
+                    musicToggle.classList.remove('muted');
+                } else {
+                    audio.pause();
+                    musicIcon.classList.remove('fa-volume-up');
+                    musicIcon.classList.add('fa-volume-mute');
+                    musicToggle.classList.add('muted');
+                }
+            });
+            
+            const allButtons = document.querySelectorAll('button');
+            allButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!musicStarted) startMusic();
+                });
+            });
+            
+            // Glow Foods Data with detailed information
+            const glowFoods = [
+                {
+                    name: "Carrot",
+                    emoji: "🥕",
+                    description: "Carrots are crunchy, sweet root vegetables that grow underground. They're known for their bright orange color, but can also be purple, red, white, or yellow!",
+                    benefits: "Great for eye health, improves night vision, boosts immune system, and promotes healthy skin.",
+                    nutrients: "Vitamin A (beta-carotene), Vitamin K, potassium, antioxidants, and fiber.",
+                    fact: "Did you know? Eating too many carrots can temporarily turn your skin slightly orange!"
+                },
+                {
+                    name: "Spinach",
+                    emoji: "🥬",
+                    description: "Spinach is a leafy green vegetable that grows close to the ground. It has dark green leaves that are packed with nutrients.",
+                    benefits: "Builds strong muscles, helps blood circulation, strengthens bones, and improves brain function.",
+                    nutrients: "Iron, Vitamin K, Vitamin A, Vitamin C, magnesium, and folate.",
+                    fact: "Popeye made spinach famous! He ate it to get super strength."
+                },
+                {
+                    name: "Tomato",
+                    emoji: "🍅",
+                    description: "Tomatoes are actually fruits, but we eat them like vegetables! They grow on vines and come in red, yellow, orange, and even purple colors.",
+                    benefits: "Protects heart health, fights infections, helps heal cuts, and keeps skin glowing.",
+                    nutrients: "Vitamin C, Vitamin K, potassium, folate, and lycopene (a powerful antioxidant).",
+                    fact: "The largest tomato ever grown weighed nearly 7 pounds – that's as heavy as a newborn baby!"
+                },
+                {
+                    name: "Broccoli",
+                    emoji: "🥦",
+                    description: "Broccoli looks like a tiny green tree! It's part of the cabbage family and grows in clusters of green flower buds.",
+                    benefits: "Fights sickness, protects bones, helps digestion, and supports brain health.",
+                    nutrients: "Vitamin C, Vitamin K, fiber, potassium, and sulforaphane (a cancer-fighting compound).",
+                    fact: "Broccoli was first grown in Italy over 2,000 years ago!"
+                },
+                {
+                    name: "Cucumber",
+                    emoji: "🥒",
+                    description: "Cucumbers are long, green vegetables with crunchy flesh and lots of water inside. They grow on vines and are related to melons.",
+                    benefits: "Keeps you hydrated, cools your body, helps with digestion, and reduces puffiness around eyes.",
+                    nutrients: "Vitamin K, potassium, magnesium, and lots of water (95% water!).",
+                    fact: "Cucumbers are one of the oldest cultivated vegetables – people have been eating them for over 3,000 years!"
+                },
+                {
+                    name: "Bell Pepper",
+                    emoji: "🫑",
+                    description: "Bell peppers come in green, red, yellow, and orange colors. They're actually fruits that grow on bushes and have a sweet, crunchy taste.",
+                    benefits: "Boosts immune system, improves eye health, protects skin from sun damage, and helps wounds heal.",
+                    nutrients: "Vitamin C (more than oranges!), Vitamin A, Vitamin B6, and antioxidants.",
+                    fact: "Green peppers are just unripe red peppers! They change color as they ripen."
+                },
+                {
+                    name: "Lettuce",
+                    emoji: "🥬",
+                    description: "Lettuce is a leafy vegetable that grows in heads or loose leaves. It's mostly water, which makes it very crisp and refreshing.",
+                    benefits: "Helps you sleep better, keeps skin clear, supports weight management, and provides hydration.",
+                    nutrients: "Vitamin K, Vitamin A, folate, iron, and lots of water.",
+                    fact: "Ancient Egyptians considered lettuce to be a sacred plant of the fertility god Min!"
+                },
+                {
+                    name: "Kale",
+                    emoji: "🥬",
+                    description: "Kale is a superfood with curly, dark green leaves. It's one of the most nutrient-dense foods on the planet!",
+                    benefits: "Detoxifies the body, fights inflammation, strengthens bones, and improves heart health.",
+                    nutrients: "Vitamin K, Vitamin C, Vitamin A, calcium, iron, and antioxidants.",
+                    fact: "Kale is related to wild cabbage and was one of the most common green vegetables in Europe until the Middle Ages."
+                },
+                {
+                    name: "Mushroom",
+                    emoji: "🍄",
+                    description: "Mushrooms are fungi, not plants! They grow in dark, moist places and come in many shapes, sizes, and colors.",
+                    benefits: "Boosts immune system, supports brain function, provides energy, and helps fight infections.",
+                    nutrients: "Vitamin D (when exposed to sunlight), B vitamins, selenium, potassium, and protein.",
+                    fact: "Some mushrooms can glow in the dark! They're called bioluminescent mushrooms."
+                },
+                {
+                    name: "Peas",
+                    emoji: "🫛",
+                    description: "Peas are small, round, green vegetables that grow inside pods. They're sweet and pop when you bite them!",
+                    benefits: "Builds strong muscles, improves digestion, supports eye health, and gives you energy.",
+                    nutrients: "Protein, fiber, Vitamin K, Vitamin C, manganese, and folate.",
+                    fact: "Peas are one of the first foods ever grown by humans – they've been eaten for over 5,000 years!"
+                }
+            ];
+            
+            // Generate Food Grid
+            const foodGrid = document.getElementById('category-list');
+            
+            glowFoods.forEach(food => {
+                const foodCard = document.createElement('div');
+                foodCard.className = 'food-card';
+                
+                foodCard.innerHTML = `
+                    <div class="food-emoji">${food.emoji}</div>
+                    <div class="food-name">${food.name}</div>
+                    <div class="food-tag">GLOW FOOD</div>
+                    <div class="click-hint">Click to learn more!</div>
+                `;
+                
+                foodCard.addEventListener('click', function() {
+                    // Play click sound (optional)
+                    console.log(`Clicked on ${food.name}`);
+                    
+                    // Show modal with food details
+                    showFoodModal(food);
+                });
+                
+                // Add hover effect
+                foodCard.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 13px 0 #ddd';
+                });
+                
+                foodCard.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 8px 0 #ddd';
+                });
+                
+                foodGrid.appendChild(foodCard);
+            });
+            
+            // Modal Elements
+            const modal = document.getElementById('foodModal');
+            const modalEmoji = document.getElementById('modalEmoji');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const modalBenefits = document.getElementById('modalBenefits');
+            const modalNutrients = document.getElementById('modalNutrients');
+            const modalFact = document.getElementById('modalFact');
+            const modalClose = document.getElementById('modalClose');
+            const modalOkBtn = document.getElementById('modalOkBtn');
+            
+            // Function to show modal
+            function showFoodModal(food) {
+                modalEmoji.textContent = food.emoji;
+                modalTitle.textContent = food.name;
+                modalDescription.textContent = food.description;
+                modalBenefits.textContent = food.benefits;
+                modalNutrients.textContent = food.nutrients;
+                modalFact.textContent = food.fact;
+                
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            }
+            
+            // Function to close modal
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto'; // Re-enable scrolling
+            }
+            
+            // Close modal events
+            modalClose.addEventListener('click', closeModal);
+            modalOkBtn.addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+            
+            // Add floating animation to decorative elements
+            const decorations = document.querySelectorAll('.decoration');
+            decorations.forEach((deco, index) => {
+                const duration = 5 + Math.random() * 5;
+                deco.style.animationDuration = `${duration}s`;
+            });
+            
+            console.log("Glow Foods page loaded! 🥦✨");
+        });
+    </script>
 </body>
 </html>
