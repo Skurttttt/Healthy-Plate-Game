@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Healthy Day Certificate</title>
+
+  <!-- Fun fonts (different font per text) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Bubblegum+Sans&family=Pacifico&family=Baloo+2:wght@700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+  <!-- html2canvas (for download) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Bubblegum Sans", cursive;
+      background: #a8e6cf;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .input {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255,255,255,0.7);
+      padding: 12px 14px;
+      border-radius: 16px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+    }
+
+    input[type="text"]{
+      width: min(320px, 90vw);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 3px solid #ffd166;
+      font-size: 1.1rem;
+      outline: none;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-family: "Fredoka One", cursive;
+      font-size: 1.05rem;
+      color: white;
+      transition: transform .15s ease;
+    }
+    .btn:active { transform: translateY(2px); }
+
+    .btn-download { background: #06d6a0; box-shadow: 0 6px 0 #04b486; }
+    .btn-home { background: #ff6b6b; box-shadow: 0 6px 0 #e65c5c; }
+
+    /* ✅ Disabled button UX */
+    .btn[disabled]{
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+      filter: grayscale(0.2);
+    }
+
+    /* Certificate Template */
+    .certificate-stage {
+      display: flex;
+      justify-content: center;
+    }
+
+    .certificate {
+      width: 100%;
+      max-width: 860px;
+      background: #ffd166;            /* ✅ Yellow background template */
+      border-radius: 28px;
+      border: 10px solid rgba(255,255,255,0.65);
+      box-shadow: 0 18px 0 rgba(0,0,0,0.10);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle pattern */
+    .certificate::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.25) 2px, transparent 2px);
+      background-size: 26px 26px;
+      transform: rotate(8deg);
+      pointer-events: none;
+    }
+
+    /* decorative corners */
+    .corner {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 28px;
+      transform: rotate(12deg);
+      pointer-events: none;
+    }
+    .corner.tl { top: -50px; left: -50px; }
+    .corner.br { bottom: -50px; right: -50px; }
+
+    .cert-inner {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.55);
+      border-radius: 22px;
+      padding: 26px;
+      border: 6px dashed rgba(0,0,0,0.1);
+    }
+
+    .seal {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.65);
+      border: 6px solid rgba(0,0,0,0.08);
+      display: grid;
+      place-items: center;
+      color: #1f5fff; /* ✅ Blue */
+      font-family: "Fredoka One", cursive;
+      text-align: center;
+      line-height: 1.05;
+    }
+    .seal span { font-size: 0.95rem; }
+
+    /* ✅ All text blue + different fonts per line */
+    .cert-title {
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(2.0rem, 3.2vw, 3.0rem);
+      color: #1f5fff;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .cert-subtitle {
+      font-family: "Pacifico", cursive;
+      font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      color: #1f5fff;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .presented {
+      font-family: "Baloo 2", cursive;
+      font-size: 1.25rem;
+      color: #1f5fff;
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .name {
+      font-family: "Fredoka One", cursive;
+      font-size: clamp(2.0rem, 3.4vw, 3.2rem);
+      color: #1f5fff;
+      text-align: center;
+      margin: 10px 0 8px;
+      text-transform: capitalize;
+      letter-spacing: 1px;
+    }
+
+    .line {
+      height: 4px;
+      width: min(520px, 90%);
+      background: rgba(31,95,255,0.35);
+      border-radius: 10px;
+      margin: 0 auto 14px;
+    }
+
+    .achievement {
+      font-family: "Bubblegum Sans", cursive;
+      font-size: 1.35rem;
+      color: #1f5fff;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .badge {
+      background: rgba(255,255,255,0.65);
+      border: 3px solid rgba(31,95,255,0.25);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: #1f5fff;
+      font-family: "Baloo 2", cursive;
+      font-size: 1.05rem;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      color: #1f5fff;
+    }
+
+    .sig {
+      flex: 1 1 220px;
+      text-align: center;
+    }
+
+    .sig .sig-name {
+      font-family: "Pacifico", cursive;
+      font-size: 1.4rem;
+      color: #1f5fff;
+      margin-bottom: 2px;
+    }
+
+    .sig .sig-role {
+      font-family: "Bubblegum Sans", cursive;
+      font-size: 1.05rem;
+      color: #1f5fff;
+      opacity: 0.95;
+    }
+
+    .date {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.15rem;
+      color: #1f5fff;
+      text-align: center;
+      margin-top: 10px;
+      opacity: 0.95;
+    }
+
+    .blocked {
+      background: rgba(255,255,255,0.85);
+      padding: 18px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.08);
+    }
+
+    .blocked h2 {
+      font-family: "Fredoka One", cursive;
+      color: #ff6b6b;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .blocked p {
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    @media (max-width: 520px){
+      .certificate { padding: 18px; }
+      .cert-inner { padding: 18px; }
+      .seal { width: 96px; height: 96px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div id="blocked" class="blocked" style="display:none;">
+      <h2>Certificate Locked 🔒</h2>
+      <p>Finish all 10 levels first, then come back here to claim your certificate!</p>
+      <div style="height:14px;"></div>
+      <button class="btn btn-home" onclick="location.href='levels.html'">Go to Levels</button>
+    </div>
+
+    <div id="content" style="display:none;">
+      <div class="top-bar">
+        <div class="input">
+          <input
+            id="playerName"
+            type="text"
+            placeholder="Name Required"
+            maxlength="40"
+            required
+          />
+          <button class="btn btn-download" id="downloadBtn" disabled>Download Certificate</button>
+          <button class="btn btn-home" onclick="location.href='index.html'">Back to Home</button>
+        </div>
+      </div>
+
+      <div class="certificate-stage">
+        <!-- This is the element we will screenshot + download -->
+        <div id="certificate" class="certificate">
+          <div class="corner tl"></div>
+          <div class="corner br"></div>
+
+          <div class="cert-inner">
+
+            <div class="cert-title">Certificate of Completion</div>
+            <div class="cert-subtitle">Healthy Plate Game</div>
+
+            <div class="presented">This certificate is proudly presented to</div>
+            <div id="certName" class="name">Your Name</div>
+            <div class="line"></div>
+
+            <div class="achievement">
+              for successfully completing<br/>
+              <b>“Completed Healthy Plate Game”</b>
+            </div>
+
+            <div class="badge-row">
+              <div class="badge">⚡ GO Foods</div>
+              <div class="badge">💪 GROW Foods</div>
+              <div class="badge">✨ GLOW Foods</div>
+            </div>
+
+            <div class="footer">
+              <div class="sig">
+                <div class="sig-name">Healthy Plate Team</div>
+                <div class="sig-role">Game Facilitator</div>
+              </div>
+
+              <div class="sig">
+                <div class="sig-name">⭐ Nutrition Champ</div>
+                <div class="sig-role">Award Badge</div>
+              </div>
+            </div>
+
+            <div id="certDate" class="date"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ✅ helper: check if all 10 levels are complete
+    function allLevelsCompleted() {
+      for (let i = 1; i <= 10; i++) {
+        if (localStorage.getItem(`level${i}Completed`) !== "true") return false;
+      }
+      return true;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const ok = allLevelsCompleted();
+      const blocked = document.getElementById("blocked");
+      const content = document.getElementById("content");
+
+      if (!ok) {
+        blocked.style.display = "block";
+        return;
+      }
+
+      content.style.display = "block";
+
+      const nameInput = document.getElementById("playerName");
+      const certName = document.getElementById("certName");
+      const certDate = document.getElementById("certDate");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const certEl = document.getElementById("certificate");
+
+      // date
+      const now = new Date();
+      const opts = { year: "numeric", month: "long", day: "numeric" };
+      certDate.textContent = `Awarded on ${now.toLocaleDateString(undefined, opts)}`;
+
+      // load saved name (optional)
+      const savedName = localStorage.getItem("certificateName") || "";
+      if (savedName) {
+        nameInput.value = savedName;
+        certName.textContent = savedName;
+      }
+
+      // ✅ set initial disabled state correctly
+      downloadBtn.disabled = !nameInput.value.trim();
+
+      // ✅ update name + enable/disable download button
+      nameInput.addEventListener("input", () => {
+        const val = nameInput.value.trim();
+        certName.textContent = val || "Your Name";
+        localStorage.setItem("certificateName", val);
+
+        downloadBtn.disabled = val.length === 0;
+      });
+
+      // ✅ Download as PNG (still has safety check)
+      downloadBtn.addEventListener("click", async () => {
+        const val = nameInput.value.trim();
+        if (!val) {
+          alert("Please enter your name first 😊");
+          nameInput.focus();
+          return;
+        }
+
+        const canvas = await html2canvas(certEl, {
+          scale: 2,     // sharper image
+          useCORS: true
+        });
+
+        const dataUrl = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = `HealthyDay_Certificate_${val.replace(/\s+/g,'_')}.png`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+    });
+  </script>
+</body>
+</html>
