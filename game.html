@@ -40,45 +40,6 @@
         .music-btn.muted { background-color: #888; box-shadow: 0 4px 0 #666; }
         .music-btn.muted:active { box-shadow: 0 1px 0 #666; }
 
-        /* Sound effects button */
-        .sound-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #9d65c9;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #8a54b5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .sound-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #8a54b5;
-        }
-
-        .sound-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .sound-btn.muted {
-            background-color: #888;
-            box-shadow: 0 4px 0 #666;
-        }
-
-        .sound-btn.muted:active {
-            box-shadow: 0 1px 0 #666;
-        }
-
         /* Decorative elements */
         .decoration { position: fixed; z-index: 0; }
         .fruit-1 { top: 10%; left: 5%; width: 80px; height: 80px; background-color: #ffd166; border-radius: 50%; animation: float 6s infinite ease-in-out; }
@@ -212,7 +173,6 @@
         .pyramid-level.highlight { transform: scale(1.02); box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); }
 
         .category-emoji { font-size: 1.8rem; }
-        /* Category Description */
         .category-description {
             font-size: 0.9rem; color: #666; font-style: italic;
             margin-top: 5px; text-align: center; width: 100%;
@@ -296,125 +256,6 @@
             .pyramid-level-header { min-width: 100px; font-size: 1rem; padding: 5px 12px; }
             .category-emoji { font-size: 1.3rem; }
             .heart { font-size: 1.5rem; }
-        #modal-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 0 #8a54b5;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 500px) {
-            .game-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .controls {
-                flex-direction: column;
-            }
-            
-            .food-item {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .food-emoji {
-                font-size: 2rem;
-            }
-            
-            .pyramid-level {
-                min-height: 80px;
-                font-size: 1.2rem;
-            }
-            
-            .pyramid-level-header {
-                font-size: 1.1rem;
-                padding: 6px 15px;
-                min-width: 120px;
-                top: -12px;
-            }
-            
-            .category-emoji {
-                font-size: 1.5rem;
-            }
-            
-            .music-player {
-                top: 10px;
-                right: 10px;
-            }
-            
-            .music-btn {
-                width: 45px;
-                height: 45px;
-                font-size: 1.3rem;
-            }
-            
-            .sound-btn {
-                top: 70px;
-                right: 10px;
-                width: 45px;
-                height: 45px;
-                font-size: 1.3rem;
-            }
-            
-            #modal-content {
-                padding: 20px;
-            }
-            
-            #modal-message {
-                font-size: 1.5rem;
-            }
-            
-            .category-legend {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .heart {
-                font-size: 1.8rem;
-            }
-            
-            .lives-container {
-                gap: 10px;
-            }
-        }
-
-        @media (max-width: 350px) {
-            .food-item {
-                width: 70px;
-                height: 70px;
-                padding: 10px;
-            }
-            
-            .food-emoji {
-                font-size: 1.8rem;
-            }
-            
-            .food-name {
-                font-size: 0.8rem;
-            }
-            
-            .home-btn, .play-again-btn, #modal-btn {
-                font-size: 1.2rem;
-                padding: 12px;
-            }
-            
-            .pyramid-level-header {
-                min-width: 100px;
-                font-size: 1rem;
-                padding: 5px 12px;
-            }
-            
-            .category-emoji {
-                font-size: 1.3rem;
-            }
-            
-            .heart {
-                font-size: 1.5rem;
-            }
-            
-            .sound-btn {
-                top: 65px;
-            }
         }
     </style>
 </head>
@@ -426,11 +267,6 @@
             <i class="fas fa-volume-up"></i>
         </button>
     </div>
-
-    <!-- Sound Effects Toggle -->
-    <button id="soundToggle" class="sound-btn">
-        <i class="fas fa-volume-up"></i>
-    </button>
 
     <!-- Decorative elements -->
     <div class="decoration fruit-1"></div>
@@ -547,27 +383,6 @@
         </div>
     </div>
 
-    <!-- Audio Elements for Sound Effects -->
-    <audio id="correctSound" preload="auto">
-        <source src="assets/sfx/correctsfx.mp3" type="audio/mpeg">
-        <source src="assets/sfx/correctsfx.ogg" type="audio/ogg">
-    </audio>
-    
-    <audio id="wrongSound" preload="auto">
-        <source src="assets/sfx/wrongsfx.mp3" type="audio/mpeg">
-        <source src="assets/sfx/wrongsfx.ogg" type="audio/ogg">
-    </audio>
-    
-    <audio id="levelCompleteSound" preload="auto">
-        <source src="assets/sfx/levelcomplete.mp3" type="audio/mpeg">
-        <source src="assets/sfx/levelcomplete.ogg" type="audio/ogg">
-    </audio>
-    
-    <audio id="levelFailedSound" preload="auto">
-        <source src="assets/sfx/levelfailed.mp3" type="audio/mpeg">
-        <source src="assets/sfx/levelfailed.ogg" type="audio/ogg">
-    </audio>
-
     <!-- Background Music -->
     <audio id="backgroundMusic" loop preload="auto">
         <source src="assets/sfx/background.mp3" type="audio/mpeg">
@@ -577,7 +392,7 @@
 
     <script>
         // ======================
-        // Healthy Food Pyramid Game with Sound Effects
+        // Healthy Food Pyramid Game
         // ======================
 
         const foods = [
@@ -625,7 +440,6 @@
         let currentLives = 3;
         let score = 0;
         let draggingFood = null;
-        let soundEffectsEnabled = true; // NEW: Sound effects toggle
 
         // Elements
         const foodPanel = document.getElementById("food-panel");
@@ -639,29 +453,6 @@
         const homeBtn = document.getElementById("home-btn");
         const currentLevelDisplay = document.getElementById("current-level");
         const hearts = document.querySelectorAll('.heart');
-
-        // NEW: Sound effect audio elements
-        const correctSound = document.getElementById("correctSound");
-        const wrongSound = document.getElementById("wrongSound");
-        const levelCompleteSound = document.getElementById("levelCompleteSound");
-        const levelFailedSound = document.getElementById("levelFailedSound");
-
-        // ======================
-        // Sound Effects Functions
-        // ======================
-        function playSoundEffect(sound, volume = 0.7) {
-            if (!soundEffectsEnabled) return;
-            
-            try {
-                sound.currentTime = 0; // Rewind to start
-                sound.volume = volume;
-                sound.play().catch(error => {
-                    console.log("Sound effect play prevented:", error);
-                });
-            } catch (error) {
-                console.log("Error playing sound effect:", error);
-            }
-        }
 
         // ======================
         // Helper Functions
@@ -723,33 +514,26 @@
             });
         }
 
-        // NEW: Lose a life function with sound effect
         function loseLife() {
             currentLives--;
             updateLivesDisplay();
-            
-            // Play wrong sound effect
-            playSoundEffect(wrongSound, 0.6);
-            
+
             if (currentLives <= 0) {
                 feedback.textContent = "😢 Game Over!";
-                // Play level failed sound
-                setTimeout(() => playSoundEffect(levelFailedSound, 0.8), 300);
-                
                 setTimeout(() => {
                     showModal(`💔 You ran out of lives! Level ${currentLevel} failed!`, () => {
                         currentLives = 3;
                         updateLivesDisplay();
                         initLevel(currentLevel);
                     });
-                }, 1500);
+                }, 1000);
                 return false;
             }
             return true;
         }
 
         // ======================
-        // Render Foods - FIXED: Don't add inline styles that override CSS
+        // Render Foods
         // ======================
         function renderFoods() {
             if (!foodPanel) return;
@@ -782,7 +566,7 @@
         }
 
         // ======================
-        // Pyramid & Drag-Drop - FIXED: Don't add inline styles
+        // Pyramid & Drag-Drop
         // ======================
         function clearPyramid() {
             pyramidLevels.forEach(lvl => {
@@ -791,6 +575,11 @@
                 lvl.innerHTML = '';
                 if (header) lvl.appendChild(header);
                 if (description) lvl.appendChild(description);
+                lvl.style.fontSize = "";
+                lvl.style.fontWeight = "";
+                lvl.style.display = "";
+                lvl.style.alignItems = "";
+                lvl.style.justifyContent = "";
             });
         }
 
@@ -842,17 +631,14 @@
         });
 
         // ======================
-        // Handle Placement - FIXED: Don't add inline styles that override CSS
+        // Handle Placement
         // ======================
         function handlePlacement(foodName, foodLevel, targetLevel) {
             const target = targetLevel.dataset.level;
             const foodIndex = levelFoods.findIndex(f => f.name === foodName);
             if (foodIndex === -1) return;
 
-            if(foodLevel === target) {
-                // Play correct sound effect
-                playSoundEffect(correctSound, 0.7);
-                
+            if (foodLevel === target) {
                 score += 10;
                 scoreDisplay.textContent = score;
 
@@ -864,7 +650,6 @@
                 const dx = targetRect.left + targetRect.width / 2 - (foodRect.left + foodRect.width / 2);
                 const dy = targetRect.top + targetRect.height / 2 - (foodRect.top + foodRect.height / 2);
 
-                // Use CSS classes instead of inline styles
                 emoji.style.position = "absolute";
                 emoji.style.zIndex = "1000";
                 emoji.style.transform = `translate(${dx}px, ${dy}px) scale(0.5)`;
@@ -878,6 +663,7 @@
                     newEmoji.textContent = levelFoods[foodIndex].emoji;
                     newEmoji.style.fontSize = "2rem";
                     newEmoji.style.margin = "5px";
+                    newEmoji.style.textAlign = "center";
                     targetLevel.appendChild(newEmoji);
 
                     foodEl.remove();
@@ -888,7 +674,6 @@
                 }, 500);
 
             } else {
-                // NEW: Wrong placement deducts a life with sound effect
                 feedback.textContent = "❌ Wrong! -1 life";
                 const stillAlive = loseLife();
 
@@ -902,14 +687,11 @@
         }
 
         // ======================
-        // Check Level Completion - UPDATED with sound effects
+        // Check Level Completion
         // ======================
         function checkLevelComplete() {
-            if(levelFoods.length === 0) {
-                // Play level complete sound
-                playSoundEffect(levelCompleteSound, 0.8);
-                
-                // Save that this level is completed
+            if (levelFoods.length === 0) {
+                // mark completed
                 localStorage.setItem(`level${currentLevel}Completed`, "true");
 
                 let storedUnlocked = parseInt(localStorage.getItem("highestUnlocked")) || 1;
@@ -965,17 +747,13 @@
         });
 
         // ======================
-        // Music and Sound Effects Player
+        // Music + Start Game
         // ======================
         document.addEventListener('DOMContentLoaded', function () {
             const audio = document.getElementById('backgroundMusic');
             const musicToggle = document.getElementById('musicToggle');
             const musicIcon = musicToggle.querySelector('i');
-            
-            // Sound Effects Toggle
-            const soundToggle = document.getElementById('soundToggle');
-            const soundIcon = soundToggle.querySelector('i');
-            
+
             audio.volume = 0.5;
             let musicStarted = false;
 
@@ -990,9 +768,8 @@
             }
 
             setTimeout(startMusic, 1000);
-            
-            // Music toggle
-            musicToggle.addEventListener('click', function() {
+
+            musicToggle.addEventListener('click', function () {
                 if (audio.paused) {
                     audio.play();
                     musicIcon.classList.remove('fa-volume-mute');
@@ -1005,22 +782,7 @@
                     musicToggle.classList.add('muted');
                 }
             });
-            
-            // Sound effects toggle
-            soundToggle.addEventListener('click', function() {
-                soundEffectsEnabled = !soundEffectsEnabled;
-                if (soundEffectsEnabled) {
-                    soundIcon.classList.remove('fa-volume-mute');
-                    soundIcon.classList.add('fa-volume-up');
-                    soundToggle.classList.remove('muted');
-                } else {
-                    soundIcon.classList.remove('fa-volume-up');
-                    soundIcon.classList.add('fa-volume-mute');
-                    soundToggle.classList.add('muted');
-                }
-            });
-            
-            // Start music on any button click
+
             const allButtons = document.querySelectorAll('button');
             allButtons.forEach(button => {
                 button.addEventListener('click', function () {
@@ -1038,18 +800,8 @@
                 const duration = 5 + Math.random() * 5;
                 deco.style.animationDuration = `${duration}s`;
             });
-            
-            // Preload sound effects
-            try {
-                correctSound.load();
-                wrongSound.load();
-                levelCompleteSound.load();
-                levelFailedSound.load();
-            } catch (error) {
-                console.log("Sound preloading error:", error);
-            }
-            
-            // Start the game
+
+            // start
             initLevel(currentLevel);
         });
 
