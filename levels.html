@@ -452,6 +452,7 @@
         <button class="back-btn" onclick="location.href='index.html'">
             <i class="fas fa-home"></i> Back to Home
         </button>
+
     </div>
 
     <!-- Background Music -->
@@ -460,6 +461,8 @@
         <source src="assets/sfx/background.mp3" type="audio/ogg">
         Your browser does not support the audio element.
     </audio>
+
+    
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -693,6 +696,12 @@
             });
             
             console.log("Levels page loaded with accurate descriptions! 🎮");
+        });
+
+        document.getElementById("test-certificate").addEventListener("click", () => {
+        for (let i = 1; i <= 10; i++) localStorage.setItem(`level${i}Completed`, "true");
+        localStorage.setItem("highestUnlocked", "10");
+        window.location.href = "certificate.html";
         });
     </script>
 </body>
