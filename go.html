@@ -257,6 +257,55 @@
             font-style: italic;
         }
 
+        /* Audio Button on Food Card */
+        .audio-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 35px;
+            height: 35px;
+            background-color: #06d6a0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            z-index: 2;
+            box-shadow: 0 3px 0 #04b486;
+        }
+
+        .food-card:hover .audio-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .audio-icon:hover {
+            background-color: #04b486;
+            transform: scale(1.1) !important;
+        }
+
+        .audio-icon:active {
+            transform: translateY(2px) scale(1) !important;
+            box-shadow: 0 1px 0 #04b486;
+        }
+
+        .audio-icon.playing {
+            background-color: #ff6b6b;
+            box-shadow: 0 3px 0 #e65c5c;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
+
         /* Energy Meter */
         .energy-meter {
             width: 100%;
@@ -368,6 +417,7 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 20px;
+            position: relative;
         }
 
         .modal-emoji {
@@ -390,6 +440,42 @@
             margin-left: 20px;
         }
 
+        /* Modal Audio Button */
+        .modal-audio-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background-color: #06d6a0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 0 #04b486;
+            transition: all 0.3s ease;
+        }
+
+        .modal-audio-btn:hover {
+            background-color: #04b486;
+            transform: scale(1.1);
+        }
+
+        .modal-audio-btn:active {
+            transform: translateY(2px) scale(1);
+            box-shadow: 0 2px 0 #04b486;
+        }
+
+        .modal-audio-btn.playing {
+            background-color: #ff6b6b;
+            box-shadow: 0 4px 0 #e65c5c;
+            animation: pulse 1.5s infinite;
+        }
+
         .modal-close {
             background: none;
             border: none;
@@ -397,6 +483,7 @@
             color: #ff6b6b;
             cursor: pointer;
             transition: transform 0.3s ease;
+            margin-top: 10px;
         }
 
         .modal-close:hover {
@@ -456,6 +543,7 @@
         .modal-footer {
             display: flex;
             justify-content: center;
+            gap: 15px;
         }
 
         .modal-btn {
@@ -484,6 +572,19 @@
             box-shadow: 0 8px 0 #e68a5c;
         }
 
+        .modal-btn.listen-btn {
+            background-color: #06d6a0;
+            box-shadow: 0 5px 0 #04b486;
+        }
+
+        .modal-btn.listen-btn:hover {
+            box-shadow: 0 8px 0 #04b486;
+        }
+
+        .modal-btn.listen-btn:active {
+            box-shadow: 0 2px 0 #04b486;
+        }
+
         /* Fun Facts */
         .fun-fact {
             background-color: #ffd166;
@@ -495,6 +596,25 @@
             color: #333;
             font-style: italic;
             border: 3px dashed #ff9e6d;
+        }
+
+        /* Audio Player Progress */
+        .audio-progress {
+            width: 100%;
+            height: 8px;
+            background-color: #eee;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .audio-progress-bar {
+            height: 100%;
+            background-color: #06d6a0;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
         }
 
         /* Responsive adjustments */
@@ -537,6 +657,11 @@
                 font-size: 1.2rem;
             }
             
+            .audio-icon {
+                opacity: 1;
+                transform: scale(1);
+            }
+            
             .back-btn {
                 font-size: 1.3rem;
                 padding: 16px;
@@ -567,12 +692,28 @@
                 font-size: 1.5rem;
             }
             
+            .modal-audio-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
             .energy-meter {
                 padding: 15px;
             }
             
             .meter-title {
                 font-size: 1.3rem;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .modal-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -611,6 +752,9 @@
             <div class="modal-header">
                 <div class="modal-emoji" id="modalEmoji"></div>
                 <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="modal-audio-btn" id="modalAudioBtn" title="Listen to description">
+                    <i class="fas fa-volume-up"></i>
+                </button>
                 <button class="modal-close" id="modalClose">&times;</button>
             </div>
             
@@ -638,11 +782,19 @@
                 </div>
                 
                 <div class="fun-fact" id="modalFact"></div>
+                
+                <!-- Audio Progress Bar -->
+                <div class="audio-progress" id="audioProgress">
+                    <div class="audio-progress-bar" id="audioProgressBar"></div>
+                </div>
             </div>
             
             <div class="modal-footer">
                 <button class="modal-btn" id="modalOkBtn">
                     <i class="fas fa-check"></i> Got it!
+                </button>
+                <button class="modal-btn listen-btn" id="modalListenBtn">
+                    <i class="fas fa-volume-up"></i> Listen Again
                 </button>
             </div>
         </div>
@@ -685,8 +837,207 @@
         Your browser does not support the audio element.
     </audio>
 
+    <!-- Narration Audio Element -->
+    <audio id="narrationAudio" preload="none">
+        Your browser does not support the audio element.
+    </audio>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // MP3 Audio Files for each food
+            // Replace these with your actual MP3 file paths
+            const foodAudioFiles = {
+                "Apple": "assets/audio/apple.mp3",
+                "Rice": "assets/audio/rice.mp3",
+                "Banana": "assets/audio/banana.mp3",
+                "Bread": "assets/audio/bread.mp3",
+                "Oats": "assets/audio/oats.mp3",
+                "Orange": "assets/audio/orange.mp3",
+                "Corn": "assets/audio/corn.mp3",
+                "Potato": "assets/audio/potato.mp3",
+                "Mango": "assets/audio/mango.mp3",
+                "Pasta": "assets/audio/pasta.mp3"
+            };
+
+            // Alternative: Use free online MP3 files for demo
+            const demoAudioFiles = {
+                "Apple": "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-talking-001-100.mp3",
+                "Banana": "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-talking-002-100.mp3",
+                "Potato": "https://assets.mixkit.co/sfx/preview/mixkit-cartoon-talking-003-100.mp3",
+                // Add more demo files or use your own
+            };
+
+            // Audio Elements
+            const narrationAudio = document.getElementById('narrationAudio');
+            const modalAudioBtn = document.getElementById('modalAudioBtn');
+            const modalListenBtn = document.getElementById('modalListenBtn');
+            const audioProgress = document.getElementById('audioProgress');
+            const audioProgressBar = document.getElementById('audioProgressBar');
+            const modalAudioIcon = modalAudioBtn.querySelector('i');
+
+            // Audio State
+            let currentAudio = null;
+            let isPlaying = false;
+
+            // Play audio for a specific food
+            function playFoodAudio(foodName) {
+                // Stop any currently playing audio
+                stopAudio();
+                
+                // Get the audio file URL
+                let audioUrl = foodAudioFiles[foodName] || demoAudioFiles[foodName];
+                
+                if (!audioUrl) {
+                    // Fallback: Use text-to-speech if no MP3 file
+                    playTextToSpeech(foodName);
+                    return;
+                }
+
+                // Set up the audio element
+                narrationAudio.src = audioUrl;
+                narrationAudio.volume = 0.8;
+                
+                // Play the audio
+                narrationAudio.play()
+                    .then(() => {
+                        currentAudio = foodName;
+                        isPlaying = true;
+                        updateAudioUI(true);
+                        audioProgress.style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error("Error playing audio:", error);
+                        // Fallback to text-to-speech
+                        playTextToSpeech(foodName);
+                    });
+            }
+
+            // Fallback: Text-to-speech if no MP3
+            function playTextToSpeech(foodName) {
+                const food = goFoods.find(f => f.name === foodName);
+                if (!food) return;
+                
+                const text = `Let's learn about ${food.name}. ${food.description}. ${food.benefits}. Did you know? ${food.fact}`;
+                
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.1;
+                    utterance.volume = 0.8;
+                    
+                    // Get voices and try to find a child-friendly one
+                    const voices = speechSynthesis.getVoices();
+                    const childVoice = voices.find(v => 
+                        v.name.includes('Child') || 
+                        v.name.includes('Kid') || 
+                        v.name.includes('Young')
+                    );
+                    
+                    if (childVoice) utterance.voice = childVoice;
+                    
+                    utterance.onstart = () => {
+                        currentAudio = foodName;
+                        isPlaying = true;
+                        updateAudioUI(true);
+                        audioProgress.style.display = 'block';
+                        simulateAudioProgress(text.length * 50); // Estimate duration
+                    };
+                    
+                    utterance.onend = () => {
+                        stopAudio();
+                    };
+                    
+                    speechSynthesis.speak(utterance);
+                } else {
+                    alert("Audio playback not supported. Please try a different browser.");
+                }
+            }
+
+            // Simulate progress bar for text-to-speech
+            function simulateAudioProgress(estimatedDuration) {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    if (!isPlaying) {
+                        clearInterval(interval);
+                        return;
+                    }
+                    
+                    progress += 100;
+                    const percent = Math.min((progress / estimatedDuration) * 100, 100);
+                    audioProgressBar.style.width = percent + '%';
+                    
+                    if (progress >= estimatedDuration) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            if (isPlaying) {
+                                stopAudio();
+                            }
+                        }, 500);
+                    }
+                }, 100);
+            }
+
+            // Update MP3 progress
+            narrationAudio.addEventListener('timeupdate', function() {
+                if (narrationAudio.duration) {
+                    const percent = (narrationAudio.currentTime / narrationAudio.duration) * 100;
+                    audioProgressBar.style.width = percent + '%';
+                }
+            });
+
+            narrationAudio.addEventListener('ended', function() {
+                stopAudio();
+            });
+
+            // Stop audio playback
+            function stopAudio() {
+                if (narrationAudio.src) {
+                    narrationAudio.pause();
+                    narrationAudio.currentTime = 0;
+                }
+                
+                if ('speechSynthesis' in window) {
+                    speechSynthesis.cancel();
+                }
+                
+                isPlaying = false;
+                updateAudioUI(false);
+                audioProgress.style.display = 'none';
+                audioProgressBar.style.width = '0%';
+                currentAudio = null;
+            }
+
+            // Update audio UI
+            function updateAudioUI(playing) {
+                if (playing) {
+                    modalAudioBtn.classList.add('playing');
+                    modalAudioIcon.classList.remove('fa-volume-up');
+                    modalAudioIcon.classList.add('fa-volume-mute');
+                    modalAudioBtn.title = "Stop listening";
+                } else {
+                    modalAudioBtn.classList.remove('playing');
+                    modalAudioIcon.classList.remove('fa-volume-mute');
+                    modalAudioIcon.classList.add('fa-volume-up');
+                    modalAudioBtn.title = "Listen to description";
+                }
+            }
+
+            // Audio button events
+            modalAudioBtn.addEventListener('click', function() {
+                const currentFood = document.getElementById('modalTitle').textContent;
+                
+                if (isPlaying && currentAudio === currentFood) {
+                    stopAudio();
+                } else {
+                    playFoodAudio(currentFood);
+                }
+            });
+
+            modalListenBtn.addEventListener('click', function() {
+                const currentFood = document.getElementById('modalTitle').textContent;
+                playFoodAudio(currentFood);
+            });
+
             // Music Player
             const audio = document.getElementById('backgroundMusic');
             const musicToggle = document.getElementById('musicToggle');
@@ -700,7 +1051,7 @@
                     audio.play().then(() => {
                         musicStarted = true;
                     }).catch(error => {
-                        console.log("Autoplay prevented. User interaction required.");
+                        console.log("Autoplay prevented.");
                     });
                 }
             }
@@ -721,14 +1072,7 @@
                 }
             });
             
-            const allButtons = document.querySelectorAll('button');
-            allButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    if (!musicStarted) startMusic();
-                });
-            });
-            
-            // Go Foods Data with detailed information
+            // Go Foods Data
             const goFoods = [
                 {
                     name: "Apple",
@@ -830,29 +1174,42 @@
                 foodCard.className = 'food-card';
                 
                 foodCard.innerHTML = `
+                    <div class="audio-icon" title="Listen about ${food.name}">
+                        <i class="fas fa-volume-up"></i>
+                    </div>
                     <div class="food-emoji">${food.emoji}</div>
                     <div class="food-name">${food.name}</div>
                     <div class="food-tag">GO FOOD</div>
-                    <div class="click-hint">Click for energy info!</div>
+                    <div class="click-hint">Click for info!</div>
                 `;
                 
-                foodCard.addEventListener('click', function() {
-                    // Play click sound (optional)
-                    console.log(`Clicked on ${food.name}`);
+                // Click to open modal
+                foodCard.addEventListener('click', function(e) {
+                    if (!e.target.closest('.audio-icon')) {
+                        showFoodModal(food);
+                    }
+                });
+                
+                // Audio icon click to play audio
+                const audioIcon = foodCard.querySelector('.audio-icon');
+                audioIcon.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    playFoodAudio(food.name);
                     
-                    // Show modal with food details
-                    showFoodModal(food);
-                });
-                
-                // Add hover effect
-                foodCard.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
-                    this.style.boxShadow = '0 13px 0 #ddd';
-                });
-                
-                foodCard.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 8px 0 #ddd';
+                    // Add visual feedback
+                    audioIcon.classList.add('playing');
+                    const icon = audioIcon.querySelector('i');
+                    icon.classList.remove('fa-volume-up');
+                    icon.classList.add('fa-volume-mute');
+                    
+                    // Reset after audio ends
+                    setTimeout(() => {
+                        if (!isPlaying || currentAudio !== food.name) {
+                            audioIcon.classList.remove('playing');
+                            icon.classList.remove('fa-volume-mute');
+                            icon.classList.add('fa-volume-up');
+                        }
+                    }, 5000); // Fallback timeout
                 });
                 
                 foodGrid.appendChild(foodCard);
@@ -892,15 +1249,21 @@
                 
                 modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
+                
+                // Auto-play audio when modal opens (optional)
+                setTimeout(() => {
+                    playFoodAudio(food.name);
+                }, 300);
             }
             
             // Function to close modal
             function closeModal() {
+                stopAudio(); // Stop audio when closing modal
                 modal.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
             
-            // Close modal events
+            // Modal button events
             modalClose.addEventListener('click', closeModal);
             modalOkBtn.addEventListener('click', closeModal);
             
@@ -920,7 +1283,7 @@
             
             // Add floating animation to decorative elements
             const decorations = document.querySelectorAll('.decoration');
-            decorations.forEach((deco, index) => {
+            decorations.forEach((deco) => {
                 const duration = 5 + Math.random() * 5;
                 deco.style.animationDuration = `${duration}s`;
             });
@@ -931,7 +1294,12 @@
                 meterFill.style.width = '85%';
             }, 500);
             
-            console.log("Go Foods page loaded! 🍎⚡");
+            // Load speech synthesis voices
+            if ('speechSynthesis' in window) {
+                speechSynthesis.getVoices();
+            }
+            
+            console.log("Go Foods page with Audio Playback loaded! 🍎🔊");
         });
     </script>
 </body>
