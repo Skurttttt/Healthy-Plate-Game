@@ -277,11 +277,7 @@
             font-style: italic;
         }
 
-        .level-reward {
-            font-size: 1.1rem;
-            color: #9d65c9;
-            font-weight: bold;
-        }
+    
 
         .lock-icon {
             position: absolute;
@@ -517,7 +513,6 @@
                     foods: "1 GO + 1 GROW + 1 GLOW",
                     unlocked: true,
                     completed: localStorage.getItem("level1Completed") === "true",
-                    reward: "🍎"
                 },
                 {
                     number: 2,
@@ -528,7 +523,7 @@
                     unlocked: localStorage.getItem("level1Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 2,
                     completed: localStorage.getItem("level2Completed") === "true",
-                    reward: "🥦"
+    
                 },
                 {
                     number: 3,
@@ -539,7 +534,7 @@
                     unlocked: localStorage.getItem("level2Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 3,
                     completed: localStorage.getItem("level3Completed") === "true",
-                    reward: "🍗"
+                  
                 },
                 {
                     number: 4,
@@ -550,7 +545,7 @@
                     unlocked: localStorage.getItem("level3Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 4,
                     completed: localStorage.getItem("level4Completed") === "true",
-                    reward: "🍽️"
+                  
                 },
                 {
                     number: 5,
@@ -561,7 +556,7 @@
                     unlocked: localStorage.getItem("level4Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 5,
                     completed: localStorage.getItem("level5Completed") === "true",
-                    reward: "🎉"
+                  
                 },
                 {
                     number: 6,
@@ -572,7 +567,7 @@
                     unlocked: localStorage.getItem("level5Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 6,
                     completed: localStorage.getItem("level6Completed") === "true",
-                    reward: "🥘"
+                    
                 },
                 {
                     number: 7,
@@ -583,7 +578,7 @@
                     unlocked: localStorage.getItem("level6Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 7,
                     completed: localStorage.getItem("level7Completed") === "true",
-                    reward: "👨‍🍳"
+                    
                 },
                 {
                     number: 8,
@@ -594,7 +589,7 @@
                     unlocked: localStorage.getItem("level7Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 8,
                     completed: localStorage.getItem("level8Completed") === "true",
-                    reward: "⭐"
+                   
                 },
                 {
                     number: 9,
@@ -605,7 +600,7 @@
                     unlocked: localStorage.getItem("level8Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 9,
                     completed: localStorage.getItem("level9Completed") === "true",
-                    reward: "🏅"
+                   
                 },
                 {
                     number: 10,
@@ -616,7 +611,7 @@
                     unlocked: localStorage.getItem("level9Completed") === "true" || 
                               parseInt(localStorage.getItem("highestUnlocked") || 1) >= 10,
                     completed: localStorage.getItem("level10Completed") === "true",
-                    reward: "🏆"
+                   
                 }
             ];
             
@@ -663,7 +658,6 @@
                     </div>
                     <div class="level-description">${level.description}</div>
                     <div class="level-foods">${level.foods}</div>
-                    <div class="level-reward">Reward: ${level.reward}</div>
                 `;
                 
                 levelsGrid.appendChild(levelCard);
