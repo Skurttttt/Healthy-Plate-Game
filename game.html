@@ -40,21 +40,6 @@
         .music-btn.muted { background-color: #888; box-shadow: 0 4px 0 #666; }
         .music-btn.muted:active { box-shadow: 0 1px 0 #666; }
 
-        /* Sound Effects Toggle */
-        .sfx-player { position: fixed; top: 80px; right: 20px; z-index: 1000; }
-        .sfx-btn {
-            width: 50px; height: 50px; border-radius: 50%;
-            background-color: #06d6a0; border: none; color: white;
-            font-size: 1.5rem; cursor: pointer;
-            box-shadow: 0 4px 0 #04b486;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .sfx-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #04b486; }
-        .sfx-btn:hover { transform: scale(1.1); }
-        .sfx-btn.muted { background-color: #888; box-shadow: 0 4px 0 #666; }
-        .sfx-btn.muted:active { box-shadow: 0 1px 0 #666; }
-
         /* Decorative elements */
         .decoration { position: fixed; z-index: 0; }
         .fruit-1 { top: 10%; left: 5%; width: 80px; height: 80px; background-color: #ffd166; border-radius: 50%; animation: float 6s infinite ease-in-out; }
@@ -255,8 +240,7 @@
             .pyramid-level-header { font-size: 1.1rem; padding: 6px 15px; min-width: 120px; top: -12px; }
             .category-emoji { font-size: 1.5rem; }
             .music-player { top: 10px; right: 10px; }
-            .sfx-player { top: 70px; right: 10px; }
-            .music-btn, .sfx-btn { width: 45px; height: 45px; font-size: 1.3rem; }
+            .music-btn { width: 45px; height: 45px; font-size: 1.3rem; }
             #modal-content { padding: 20px; }
             #modal-message { font-size: 1.5rem; }
             .category-legend { flex-direction: column; align-items: center; }
@@ -272,7 +256,6 @@
             .pyramid-level-header { min-width: 100px; font-size: 1rem; padding: 5px 12px; }
             .category-emoji { font-size: 1.3rem; }
             .heart { font-size: 1.5rem; }
-            .sfx-player { top: 65px; }
         }
     </style>
 </head>
@@ -282,13 +265,6 @@
     <div class="music-player">
         <button id="musicToggle" class="music-btn">
             <i class="fas fa-volume-up"></i>
-        </button>
-    </div>
-
-    <!-- Sound Effects Player -->
-    <div class="sfx-player">
-        <button id="sfxToggle" class="sfx-btn">
-            <i class="fas fa-bell"></i>
         </button>
     </div>
 
@@ -410,27 +386,8 @@
     <!-- Background Music -->
     <audio id="backgroundMusic" loop preload="auto">
         <source src="assets/sfx/background.mp3" type="audio/mpeg">
+        <source src="assets/sfx/background.mp3" type="audio/ogg">
         Your browser does not support the audio element.
-    </audio>
-
-    <!-- Sound Effects -->
-    <audio id="correctSound" preload="auto">
-        <source src="assets/sfx/correctsfx.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="wrongSound" preload="auto">
-        <source src="assets/sfx/wrongsfx.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="clickSound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="winSound" preload="auto">
-        <source src="assets/sfx/levelcomplete.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="loseSound" preload="auto">
-        <source src="assets/sfx/levelfailed.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="dropSound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -483,7 +440,6 @@
         let currentLives = 3;
         let score = 0;
         let draggingFood = null;
-        let sfxEnabled = true;
 
         // Elements
         const foodPanel = document.getElementById("food-panel");
@@ -497,25 +453,6 @@
         const homeBtn = document.getElementById("home-btn");
         const currentLevelDisplay = document.getElementById("current-level");
         const hearts = document.querySelectorAll('.heart');
-
-        // Audio elements
-        const bgMusic = document.getElementById("backgroundMusic");
-        const correctSound = document.getElementById("correctSound");
-        const wrongSound = document.getElementById("wrongSound");
-        const clickSound = document.getElementById("clickSound");
-        const winSound = document.getElementById("winSound");
-        const loseSound = document.getElementById("loseSound");
-        const dropSound = document.getElementById("dropSound");
-
-        // ======================
-        // Sound Functions
-        // ======================
-        function playSound(sound) {
-            if (!sfxEnabled) return;
-            sound.currentTime = 0;
-            sound.volume = 0.5;
-            sound.play().catch(e => console.log("Sound play failed:", e));
-        }
 
         // ======================
         // Helper Functions
@@ -582,7 +519,6 @@
             updateLivesDisplay();
 
             if (currentLives <= 0) {
-                playSound(loseSound);
                 feedback.textContent = "😢 Game Over!";
                 setTimeout(() => {
                     showModal(`💔 You ran out of lives! Level ${currentLevel} failed!`, () => {
@@ -626,7 +562,6 @@
 
                 foodEl.addEventListener("dragstart", dragStart);
                 foodEl.addEventListener("touchstart", touchStart);
-                foodEl.addEventListener("mousedown", () => playSound(clickSound));
             });
         }
 
@@ -668,7 +603,6 @@
 
         function touchStart(e) {
             draggingFood = e.currentTarget;
-            playSound(clickSound);
         }
 
         pyramidLevels.forEach(level => {
@@ -705,7 +639,6 @@
             if (foodIndex === -1) return;
 
             if (foodLevel === target) {
-                playSound(correctSound);
                 score += 10;
                 scoreDisplay.textContent = score;
 
@@ -723,7 +656,6 @@
                 emoji.style.transition = "transform 0.5s ease";
 
                 setTimeout(() => {
-                    playSound(dropSound);
                     emoji.remove();
 
                     const newEmoji = document.createElement("div");
@@ -742,7 +674,6 @@
                 }, 500);
 
             } else {
-                playSound(wrongSound);
                 feedback.textContent = "❌ Wrong! -1 life";
                 const stillAlive = loseLife();
 
@@ -762,7 +693,6 @@
             if (levelFoods.length === 0) {
                 // mark completed
                 localStorage.setItem(`level${currentLevel}Completed`, "true");
-                playSound(winSound);
 
                 let storedUnlocked = parseInt(localStorage.getItem("highestUnlocked")) || 1;
                 if (currentLevel >= storedUnlocked && currentLevel < maxLevel) {
@@ -796,7 +726,6 @@
             modalMessage.textContent = message;
             modal.style.display = "flex";
             modalBtn.onclick = () => {
-                playSound(clickSound);
                 modal.style.display = "none";
                 if (callback) callback();
             };
@@ -806,7 +735,6 @@
         // Buttons
         // ======================
         playAgainBtn.addEventListener("click", () => {
-            playSound(clickSound);
             score = 0;
             currentLevel = 1;
             currentLives = 3;
@@ -815,45 +743,23 @@
         });
 
         homeBtn.addEventListener("click", () => {
-            playSound(clickSound);
             window.location.href = "index.html";
         });
 
         // ======================
-        // Music + SFX Controls
+        // Music + Start Game
         // ======================
         document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById('backgroundMusic');
             const musicToggle = document.getElementById('musicToggle');
-            const sfxToggle = document.getElementById('sfxToggle');
             const musicIcon = musicToggle.querySelector('i');
-            const sfxIcon = sfxToggle.querySelector('i');
 
-            // Set initial volume
-            bgMusic.volume = 0.5;
-            
-            // Check localStorage for saved settings
-            const savedMusicState = localStorage.getItem('pyramidMusicEnabled');
-            const savedSfxState = localStorage.getItem('pyramidSfxEnabled');
-            
-            if (savedMusicState === 'false') {
-                bgMusic.pause();
-                musicIcon.classList.remove('fa-volume-up');
-                musicIcon.classList.add('fa-volume-mute');
-                musicToggle.classList.add('muted');
-            }
-            
-            if (savedSfxState === 'false') {
-                sfxEnabled = false;
-                sfxIcon.classList.remove('fa-bell');
-                sfxIcon.classList.add('fa-bell-slash');
-                sfxToggle.classList.add('muted');
-            }
-
+            audio.volume = 0.5;
             let musicStarted = false;
 
             function startMusic() {
-                if (!musicStarted && savedMusicState !== 'false') {
-                    bgMusic.play().then(() => {
+                if (!musicStarted) {
+                    audio.play().then(() => {
                         musicStarted = true;
                     }).catch(() => {
                         console.log("Autoplay prevented. User interaction required.");
@@ -863,46 +769,24 @@
 
             setTimeout(startMusic, 1000);
 
-            // Music toggle
             musicToggle.addEventListener('click', function () {
-                playSound(clickSound);
-                if (bgMusic.paused) {
-                    bgMusic.play();
+                if (audio.paused) {
+                    audio.play();
                     musicIcon.classList.remove('fa-volume-mute');
                     musicIcon.classList.add('fa-volume-up');
                     musicToggle.classList.remove('muted');
-                    localStorage.setItem('pyramidMusicEnabled', 'true');
                 } else {
-                    bgMusic.pause();
+                    audio.pause();
                     musicIcon.classList.remove('fa-volume-up');
                     musicIcon.classList.add('fa-volume-mute');
                     musicToggle.classList.add('muted');
-                    localStorage.setItem('pyramidMusicEnabled', 'false');
                 }
             });
 
-            // SFX toggle
-            sfxToggle.addEventListener('click', function () {
-                sfxEnabled = !sfxEnabled;
-                if (sfxEnabled) {
-                    playSound(clickSound);
-                    sfxIcon.classList.remove('fa-bell-slash');
-                    sfxIcon.classList.add('fa-bell');
-                    sfxToggle.classList.remove('muted');
-                    localStorage.setItem('pyramidSfxEnabled', 'true');
-                } else {
-                    sfxIcon.classList.remove('fa-bell');
-                    sfxIcon.classList.add('fa-bell-slash');
-                    sfxToggle.classList.add('muted');
-                    localStorage.setItem('pyramidSfxEnabled', 'false');
-                }
-            });
-
-            // Start music on any button click
             const allButtons = document.querySelectorAll('button');
             allButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    if (!musicStarted && savedMusicState !== 'false') startMusic();
+                    if (!musicStarted) startMusic();
                 });
             });
 
@@ -920,6 +804,9 @@
             // start
             initLevel(currentLevel);
         });
+
+        
+
     </script>
 </body>
 </html>
